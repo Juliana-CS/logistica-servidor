@@ -1,0 +1,24 @@
+{
+  "27847537": {
+    "contato": true,
+    "contato_at": "2026-04-27T11:24:45.510Z",
+    "liberacao": true,
+    "liberacao_at": "2026-04-27T11:24:46.472Z",
+    "acionamento": true,
+    "acionamento_at": "2026-04-27T11:24:49.789Z",
+    "doca": "25",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "VALDIR DONIZETE DE SOUZA"
+  },
+  "27856178": {
+    "contato": true,
+    "contato_at": "2026-04-27T10:54:22.671Z",
+    "liberacao": true,
+    "liberacao_at": "2026-04-27T10:54:23.305Z",
+    "acionamento": true,
+    "acionamento_at": "2026-04-27T10:54:27.625Z",
+    "doca": "12",
+    "fornecedor": "NEWAGE IND E COM DE BEB E ALIM LTDA",
+    "motorista": "RICARDO  SANTANA RODRIGUES"
+  }
+}

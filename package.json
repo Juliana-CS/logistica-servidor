@@ -1,0 +1,12 @@
+{
+  "name": "logistica-recebimento",
+  "version": "2.0.0",
+  "description": "Acompanhamento Logístico de Recebimento — Servidor de rede local",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
