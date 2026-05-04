@@ -1,4 +1,3 @@
-
 // ============================================================
 // LOGÍSTICA DE RECEBIMENTO - APP PRINCIPAL
 // Desenvolvido para uso simultâneo via JSON compartilhado
@@ -31,8 +30,8 @@ function getTurno(date) {
   const h = date.getHours();
   const m = date.getMinutes();
   const total = h * 60 + m;
-  if (total >= 6 * 60 && total <= 13 * 60 + 59) return '1º Turno';   // 06:00–14:20
-  if (total >= 14 * 60 && total <= 21 * 60 + 59) return '2º Turno';  // 14:21–22:00
+  if (total >= 6 * 60 && total <= 14 * 60 + 20) return '1º Turno';   // 06:00–14:20
+  if (total >= 14 * 60 + 21 && total <= 22 * 60) return '2º Turno';  // 14:21–22:00
   return '3º Turno';                                                   // 22:01–05:59
 }
 
@@ -60,35 +59,35 @@ function formatDuration(minutes) {
 }
 
 function getDocaSLAColor(minutes) {
-  if (minutes === null) return 'text-slate-400';
-  if (minutes >= 240) return 'text-red-400';
-  if (minutes >= 180) return 'text-orange-400';
-  if (minutes >= 120) return 'text-yellow-400';
-  return 'text-green-400';
+  if (minutes === null) return 'text-slate-500';
+  if (minutes >= 240) return 'text-red-700';
+  if (minutes >= 180) return 'text-orange-700';
+  if (minutes >= 120) return 'text-yellow-700';
+  return 'text-green-700';
 }
 
 function getDocaSLABg(minutes) {
-  if (minutes === null) return 'bg-slate-800';
-  if (minutes >= 240) return 'bg-red-900/40 border-l-4 border-red-500';
-  if (minutes >= 180) return 'bg-orange-900/40 border-l-4 border-orange-500';
-  if (minutes >= 120) return 'bg-yellow-900/40 border-l-4 border-yellow-500';
-  return 'bg-green-900/20 border-l-4 border-green-600';
+  if (minutes === null) return 'bg-slate-100';
+  if (minutes >= 240) return 'bg-red-50 border-l-4 border-red-500';
+  if (minutes >= 180) return 'bg-orange-50 border-l-4 border-orange-500';
+  if (minutes >= 120) return 'bg-yellow-50 border-l-4 border-yellow-500';
+  return 'bg-green-50 border-l-4 border-green-500';
 }
 
 function getAguardandoSLAColor(minutes) {
-  if (minutes === null) return 'text-slate-400';
-  if (minutes >= 120) return 'text-red-400';
-  if (minutes >= 90) return 'text-orange-400';
-  if (minutes >= 60) return 'text-yellow-400';
-  return 'text-green-400';
+  if (minutes === null) return 'text-slate-500';
+  if (minutes >= 120) return 'text-red-700';
+  if (minutes >= 90) return 'text-orange-700';
+  if (minutes >= 60) return 'text-yellow-700';
+  return 'text-green-700';
 }
 
 function getAguardandoSLABg(minutes) {
   if (minutes === null) return '';
-  if (minutes >= 120) return 'bg-red-900/30 border-l-4 border-red-500';
-  if (minutes >= 90) return 'bg-orange-900/30 border-l-4 border-orange-500';
-  if (minutes >= 60) return 'bg-yellow-900/30 border-l-4 border-yellow-500';
-  return 'bg-green-900/20 border-l-4 border-green-600';
+  if (minutes >= 120) return 'bg-red-50 border-l-4 border-red-500';
+  if (minutes >= 90) return 'bg-orange-50 border-l-4 border-orange-500';
+  if (minutes >= 60) return 'bg-yellow-50 border-l-4 border-yellow-500';
+  return 'bg-green-50 border-l-4 border-green-500';
 }
 
 // SLA baseado em registros/hora (contagem de cargas por hora do slot)
@@ -100,10 +99,10 @@ function getEficienciaIcon(val) {
 }
 
 function getEficienciaColor(val) {
-  if (val === null || val === undefined) return 'text-slate-400';
-  if (val <= 5) return 'text-red-400';
-  if (val >= 7) return 'text-green-400';
-  return 'text-yellow-400';
+  if (val === null || val === undefined) return 'text-slate-500';
+  if (val <= 5) return 'text-red-700';
+  if (val >= 7) return 'text-green-700';
+  return 'text-yellow-700';
 }
 
 // ─── LÓGICA DE RUA (MODA) ────────────────────────────────────
@@ -188,9 +187,11 @@ function processConf(csvText) {
       eficiencia, qtde,
       conferente: row['CONFERENTE'],
       descricao: row['DESCRICAO'],
-      fimConf: fimDate,     // Date — mantido para compatibilidade
-      fimConfDia,               // 'DD/MM' — dia calendário puro do FINALCONF_DATA
-      fimConfMin,               // minutos do FINALCONF_HORA — para classificar turno e slot
+      fimConf: fimDate,
+      fimConfDia,
+      fimConfMin,
+      temInicio: !!(inicioDate),   // true se INICIOCONF preenchido
+      temFim: !!(fimDate),      // true se FINALCONF preenchido
     };
   });
   return efMapRaw;
@@ -265,13 +266,13 @@ function normalizeContinum(row) {
 // ─── COMPONENTES UI BASE ─────────────────────────────────────
 function Badge({ children, color = 'blue' }) {
   const colors = {
-    blue: 'bg-blue-900/50 text-blue-300 border border-blue-700/50',
-    green: 'bg-green-900/50 text-green-300 border border-green-700/50',
-    yellow: 'bg-yellow-900/50 text-yellow-300 border border-yellow-700/50',
-    orange: 'bg-orange-900/50 text-orange-300 border border-orange-700/50',
-    red: 'bg-red-900/50 text-red-300 border border-red-700/50',
-    slate: 'bg-slate-800 text-slate-400 border border-slate-700',
-    purple: 'bg-purple-900/50 text-purple-300 border border-purple-700/50',
+    blue: 'bg-blue-100 text-blue-800 border border-blue-400',
+    green: 'bg-green-100 text-green-800 border border-green-400',
+    yellow: 'bg-yellow-100 text-yellow-800 border border-yellow-400',
+    orange: 'bg-orange-100 text-orange-800 border border-orange-400',
+    red: 'bg-red-100 text-red-800 border border-red-400',
+    slate: 'bg-slate-100 text-slate-700 border border-slate-400',
+    purple: 'bg-purple-100 text-purple-800 border border-purple-400',
   };
   return (
     <span className={`status-badge ${colors[color] || colors.blue}`}>{children}</span>
@@ -296,28 +297,28 @@ function StatusBadge({ status }) {
 
 function Card({ title, value, sub, color = 'blue', icon }) {
   const border = {
-    blue: 'border-blue-700/40',
-    green: 'border-green-700/40',
-    yellow: 'border-yellow-700/40',
-    red: 'border-red-700/40',
-    orange: 'border-orange-700/40',
-    purple: 'border-purple-700/40',
+    blue: 'border-blue-400',
+    green: 'border-green-400',
+    yellow: 'border-yellow-400',
+    red: 'border-red-400',
+    orange: 'border-orange-400',
+    purple: 'border-purple-400',
   };
   const text = {
-    blue: 'text-blue-400',
-    green: 'text-green-400',
-    yellow: 'text-yellow-400',
-    red: 'text-red-400',
-    orange: 'text-orange-400',
-    purple: 'text-purple-400',
+    blue: 'text-blue-700',
+    green: 'text-green-700',
+    yellow: 'text-yellow-700',
+    red: 'text-red-700',
+    orange: 'text-orange-700',
+    purple: 'text-purple-700',
   };
   return (
-    <div className={`bg-slate-900 border ${border[color]} rounded-lg p-4 card-glow`}>
+    <div className={`bg-white border ${border[color]} rounded-lg p-4 card-glow shadow-sm`}>
       <div className="flex items-start justify-between">
         <div>
-          <p className="text-xs text-slate-500 uppercase tracking-widest font-semibold">{title}</p>
-          <p className={`text-3xl font-bold mt-1 font-mono ${text[color]}`}>{value}</p>
-          {sub && <p className="text-xs text-slate-500 mt-1">{sub}</p>}
+          <p className="text-sm text-slate-600 uppercase tracking-widest font-bold">{title}</p>
+          <p className={`text-4xl font-bold mt-1 font-mono ${text[color]}`}>{value}</p>
+          {sub && <p className="text-xs text-slate-600 mt-1">{sub}</p>}
         </div>
         {icon && <span className="text-2xl opacity-30">{icon}</span>}
       </div>
@@ -329,11 +330,11 @@ function Card({ title, value, sub, color = 'blue', icon }) {
 function UploadSection({ onContinum, onConf, onPaletes, loaded }) {
   const fileInput = (label, accept, onChange, isLoaded) => (
     <label className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed rounded-lg p-3 cursor-pointer transition-all
-      ${isLoaded ? 'border-green-600 bg-green-900/20' : 'border-slate-700 hover:border-blue-600 bg-slate-900/50'}`}
+      ${isLoaded ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-blue-600 bg-white/80'}`}
       style={{ minWidth: 160 }}>
       <span className="text-lg">{isLoaded ? '✓' : '↑'}</span>
-      <span className="text-xs font-semibold text-slate-300">{label}</span>
-      <span className={`text-xs ${isLoaded ? 'text-green-400' : 'text-slate-500'}`}>
+      <span className="text-xs font-semibold text-slate-800">{label}</span>
+      <span className={`text-xs ${isLoaded ? 'text-green-700' : 'text-slate-500'}`}>
         {isLoaded ? 'Carregado' : 'Clique para selecionar'}
       </span>
       <input type="file" accept={accept} className="hidden" onChange={onChange} />
@@ -341,10 +342,10 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded }) {
   );
 
   return (
-    <div className="bg-slate-950 border border-slate-800 rounded-xl p-4">
+    <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
       <div className="flex items-center gap-2 mb-3">
         <div className="pulse-dot"></div>
-        <h2 className="text-sm font-bold text-slate-300 uppercase tracking-widest">Upload de Bases</h2>
+        <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Upload de Bases</h2>
       </div>
       <div className="flex flex-wrap gap-3">
         {fileInput('Base Continum (.xls)', '.xls,.xlsx,.html', onContinum, loaded.continum)}
@@ -407,16 +408,16 @@ function DashboardGeral({ data }) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3">
-        <span className="text-xs text-slate-500 uppercase tracking-widest font-semibold">Filtrar por data:</span>
+        <span className="text-xs text-slate-600 uppercase tracking-widest font-semibold">Filtrar por data:</span>
         <div className="flex gap-2 flex-wrap">
           <button
             onClick={() => setSelectedDay('__all__')}
-            className={`px-3 py-1 rounded text-xs font-semibold transition-all ${selectedDay === '__all__' ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+            className={`px-3 py-1 rounded text-xs font-semibold transition-all ${selectedDay === '__all__' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >Todas</button>
           {allDays.map(d => (
             <button key={d}
               onClick={() => setSelectedDay(d)}
-              className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${selectedDay === d ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+              className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${selectedDay === d ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
             >{d}</button>
           ))}
         </div>
@@ -430,20 +431,21 @@ function DashboardGeral({ data }) {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Programado por Dia/Turno</h3>
+        <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
+          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">Programado por Dia/Turno</h3>
           <div className="space-y-3">
             {Object.entries(stats.byDay).sort().map(([day, info]) => (
-              <div key={day} className="border border-slate-800 rounded-lg p-3">
+              <div key={day} className="border border-slate-300 rounded-lg p-3">
                 <div className="flex justify-between items-center mb-2">
-                  <span className="font-mono text-sm text-blue-300">{day}</span>
-                  <span className="font-mono text-sm text-slate-300">{info.total} cargas</span>
+                  <span className="font-mono text-sm text-blue-700">{day}</span>
+                  <span className="font-mono text-sm text-slate-800">{info.total} cargas</span>
                 </div>
                 <div className="flex gap-2 flex-wrap">
                   {Object.entries(info.turnos).map(([t, n]) => n > 0 && (
-                    <div key={t} className="flex items-center gap-1 text-xs bg-slate-800 rounded px-2 py-1">
-                      <span className="text-slate-400">{t.replace(' Turno', 'T')}:</span>
-                      <span className="text-slate-200 font-mono font-semibold">{n}</span>
+                    <div key={t} className="flex items-center gap-1 text-xs bg-slate-100 rounded px-2 py-1">
+                      <span className="text-slate-600">{t.replace(' Turno', 'T')}:</span>
+                      <span className="text-slate-900 font-mono font-semibold">{n}</span>
+                      <span className="text-slate-700 font-mono">({info.total > 0 ? ((n / info.total) * 100).toFixed(0) : 0}%)</span>
                     </div>
                   ))}
                 </div>
@@ -452,45 +454,45 @@ function DashboardGeral({ data }) {
           </div>
         </div>
 
-        <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">Contagem por Status × Data</h3>
+        <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
+          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Contagem por Status × Data</h3>
           <p className="text-xs text-slate-600 mb-3">Exibe todos os dias independente do filtro</p>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
-                <tr className="border-b border-slate-700">
-                  <th className="text-left py-2 px-2 text-slate-500 font-semibold whitespace-nowrap">Status</th>
+                <tr className="border-b border-slate-300">
+                  <th className="text-left py-2 px-2 text-slate-700 font-semibold whitespace-nowrap">Status</th>
                   {allDays.map(d => (
-                    <th key={d} className="text-center py-2 px-2 text-slate-500 font-mono font-semibold whitespace-nowrap">{d}</th>
+                    <th key={d} className="text-center py-2 px-2 text-slate-700 font-mono font-semibold whitespace-nowrap">{d}</th>
                   ))}
-                  <th className="text-center py-2 px-2 text-slate-400 font-semibold">Total</th>
+                  <th className="text-center py-2 px-2 text-slate-700 font-semibold">Total</th>
                 </tr>
               </thead>
               <tbody>
                 {crossTab.statuses.map(st => {
                   const rowTotal = allDays.reduce((acc, d) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
                   return (
-                    <tr key={st} className="border-b border-slate-800/50 table-row-hover">
+                    <tr key={st} className="border-b border-slate-200 table-row-hover">
                       <td className="py-2 px-2 whitespace-nowrap"><StatusBadge status={st} /></td>
                       {allDays.map(d => {
                         const n = crossTab.byStatusDay[st]?.[d] || 0;
                         return (
-                          <td key={d} className={`py-2 px-2 text-center font-mono font-bold ${n > 0 ? 'text-slate-200' : 'text-slate-700'}`}>
+                          <td key={d} className={`py-2 px-2 text-center font-mono font-bold ${n > 0 ? 'text-slate-800' : 'text-slate-700'}`}>
                             {n > 0 ? n : '–'}
                           </td>
                         );
                       })}
-                      <td className="py-2 px-2 text-center font-mono font-bold text-blue-400">{rowTotal}</td>
+                      <td className="py-2 px-2 text-center font-mono font-bold text-blue-700">{rowTotal}</td>
                     </tr>
                   );
                 })}
-                <tr className="border-t border-slate-700 bg-slate-800/30">
-                  <td className="py-2 px-2 text-xs font-bold text-slate-400">TOTAL</td>
+                <tr className="border-t border-slate-300 bg-slate-50">
+                  <td className="py-2 px-2 text-xs font-bold text-slate-600">TOTAL</td>
                   {allDays.map(d => {
                     const colTotal = crossTab.statuses.reduce((acc, st) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
-                    return <td key={d} className="py-2 px-2 text-center font-mono font-bold text-blue-300">{colTotal}</td>;
+                    return <td key={d} className="py-2 px-2 text-center font-mono font-bold text-blue-700">{colTotal}</td>;
                   })}
-                  <td className="py-2 px-2 text-center font-mono font-bold text-blue-200">{data.length}</td>
+                  <td className="py-2 px-2 text-center font-mono font-bold text-blue-700">{data.length}</td>
                 </tr>
               </tbody>
             </table>
@@ -504,8 +506,8 @@ function DashboardGeral({ data }) {
 // Turno pelo total de minutos (0-1439), sem precisar de Date object
 function getTurnoByMin(totalMin) {
   if (totalMin === null || totalMin === undefined) return null;
-  if (totalMin >= 6 * 60 && totalMin <= 13 * 60 + 59) return '1º Turno';
-  if (totalMin >= 14 * 60 && totalMin <= 21 * 60) return '2º Turno';
+  if (totalMin >= 6 * 60 && totalMin <= 14 * 60 + 20) return '1º Turno';
+  if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60) return '2º Turno';
   return '3º Turno';
 }
 
@@ -560,44 +562,44 @@ function DashboardEficiencia({ data, efMap }) {
     <div className="space-y-6">
       {/* Filtro de data */}
       <div className="flex items-center gap-3 flex-wrap">
-        <span className="text-xs text-slate-500 uppercase tracking-widest font-semibold">Filtrar por data:</span>
+        <span className="text-xs text-slate-600 uppercase tracking-widest font-semibold">Filtrar por data:</span>
         <button
           onClick={() => setSelectedDay('__all__')}
-          className={`px-3 py-1 rounded text-xs font-semibold transition-all ${selectedDay === '__all__' ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+          className={`px-3 py-1 rounded text-xs font-semibold transition-all ${selectedDay === '__all__' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
         >Todas</button>
         {allDays.map(d => (
           <button key={d}
             onClick={() => setSelectedDay(d)}
-            className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${selectedDay === d ? 'bg-blue-700 text-white' : 'bg-slate-800 text-slate-400 hover:bg-slate-700'}`}
+            className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${selectedDay === d ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
           >{d}</button>
         ))}
       </div>
 
-      {/* Cards por turno */}
+      {/* Cards por turno + Gráfico na mesma linha */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Cards compactos em coluna */}
+        {/* Cards compactos */}
         <div className="flex flex-col gap-3">
           {Object.entries(stats).map(([turno, { prog, fin }]) => {
             const pct = prog > 0 ? ((fin / prog) * 100).toFixed(1) : '0.0';
             return (
-              <div key={turno} className="bg-slate-900 border border-slate-700 rounded-xl px-4 py-3">
+              <div key={turno} className="bg-white border border-slate-300 rounded-xl px-4 py-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{turno}</span>
+                  <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{turno}</span>
                   <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
                     {pct}%
                   </Badge>
                 </div>
                 <div className="flex items-center gap-4">
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">Prog</span>
-                    <span className="text-xl font-mono font-bold text-slate-200">{prog}</span>
+                    <span className="text-xs text-slate-600">Prog</span>
+                    <span className="text-2xl font-mono font-bold text-slate-900">{prog}</span>
                   </div>
                   <span className="text-slate-600">|</span>
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-500">Fin</span>
-                    <span className="text-xl font-mono font-bold text-green-400">{fin}</span>
+                    <span className="text-xs text-slate-600">Fin</span>
+                    <span className="text-xl font-mono font-bold text-green-700">{fin}</span>
                   </div>
-                  <div className="flex-1 bg-slate-800 rounded-full h-1.5 ml-2">
+                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 ml-2">
                     <div
                       className={`h-1.5 rounded-full transition-all ${parseFloat(pct) >= 80 ? 'bg-green-500' : parseFloat(pct) >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
                       style={{ width: `${pct}%` }}
@@ -608,8 +610,7 @@ function DashboardEficiencia({ data, efMap }) {
             );
           })}
         </div>
-
-        {/* Gráfico ao lado */}
+        {/* Gráfico menor */}
         <GraficoFinalizadosTurno stats={stats} />
       </div>
 
@@ -631,13 +632,13 @@ function GraficoFinalizadosTurno({ stats }) {
   const maximo = Math.max(...valores, 1);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-5">
-      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-5">
+    <div className="bg-white border border-slate-300 rounded-xl p-5 shadow-sm">
+      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-5">
         Finalizados por Turno
       </h3>
 
       {/* Barras */}
-      <div className="flex items-end justify-around gap-6 h-48 px-4">
+      <div className="flex items-end justify-around gap-4 px-2" style={{ height: 120 }}>
         {turnos.map((t, i) => {
           const val = valores[i];
           const pct = maximo > 0 ? (val / maximo) * 100 : 0;
@@ -646,39 +647,28 @@ function GraficoFinalizadosTurno({ stats }) {
             : '0%';
 
           return (
-            <div key={t.key} className="flex flex-col items-center gap-2 flex-1">
-              {/* Valor acima da barra */}
-              <span className="text-xl font-mono font-bold" style={{ color: t.cor }}>{val}</span>
-
-              {/* Barra */}
-              <div className="w-full flex items-end" style={{ height: 140 }}>
+            <div key={t.key} className="flex flex-col items-center gap-1 flex-1">
+              <span className="text-sm font-mono font-bold" style={{ color: t.cor }}>{val}</span>
+              <div className="w-full flex items-end" style={{ height: 80 }}>
                 <div
-                  className="w-full rounded-t-lg transition-all duration-500 flex items-end justify-center pb-2"
-                  style={{
-                    height: `${Math.max(pct, 4)}%`,
-                    backgroundColor: t.cor,
-                    boxShadow: `0 0 16px ${t.cor}55`,
-                  }}
+                  className="w-full rounded-t-lg transition-all duration-500 flex items-end justify-center pb-1"
+                  style={{ height: `${Math.max(pct, 4)}%`, backgroundColor: t.cor, boxShadow: `0 0 10px ${t.cor}55` }}
                 >
-                  {pct > 20 && (
-                    <span className="text-xs font-bold text-white/80">{pctProg}</span>
-                  )}
+                  {pct > 25 && <span className="text-xs font-bold text-white/80">{pctProg}</span>}
                 </div>
               </div>
-
-              {/* Label */}
-              <span className="text-xs font-semibold text-slate-400">{t.nome}</span>
+              <span className="text-xs font-semibold text-slate-600">{t.nome.replace(' Turno', 'T')}</span>
             </div>
           );
         })}
       </div>
 
       {/* Linha de referência e legenda */}
-      <div className="mt-4 pt-3 border-t border-slate-800 flex justify-center gap-6">
+      <div className="mt-4 pt-3 border-t border-slate-200 flex justify-center gap-6">
         {turnos.map((t, i) => (
-          <div key={t.key} className="flex items-center gap-2 text-xs text-slate-500">
+          <div key={t.key} className="flex items-center gap-2 text-xs text-slate-600">
             <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: t.cor }}></span>
-            {t.nome}: <span className="font-mono font-bold text-slate-300">{valores[i]}</span>
+            {t.nome}: <span className="font-mono font-bold text-slate-800">{valores[i]}</span>
             <span className="text-slate-600">
               ({stats[t.key]?.prog > 0
                 ? ((valores[i] / stats[t.key].prog) * 100).toFixed(0)
@@ -695,7 +685,7 @@ function GraficoFinalizadosTurno({ stats }) {
 function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
   const TURNOS = [
     {
-      nome: '1º Turno', cor: 'border-blue-600', corHeader: 'bg-blue-900/40 text-blue-300',
+      nome: '1º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-900/40 text-blue-700',
       // Slots: [início_inclusive, fim_exclusive) em minutos. Último slot fecha no fim do turno.
       slots: [
         { label: '06:00', ini: 6 * 60, fim: 7 * 60 },
@@ -706,14 +696,14 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '11:00', ini: 11 * 60, fim: 12 * 60 },
         { label: '12:00', ini: 12 * 60, fim: 13 * 60 },
         { label: '13:00', ini: 13 * 60, fim: 14 * 60 },
-        { label: '14:00', ini: 14 * 60, fim: 14 * 60 + 25 },
+        { label: '14:00', ini: 14 * 60, fim: 14 * 60 + 20 },
       ],
-      turnoIni: 6 * 60, turnoFim: 14 * 60 + 25,
+      turnoIni: 6 * 60, turnoFim: 14 * 60 + 20,
     },
     {
-      nome: '2º Turno', cor: 'border-yellow-600', corHeader: 'bg-yellow-900/40 text-yellow-300',
+      nome: '2º Turno', cor: 'border-yellow-400', corHeader: 'bg-yellow-900/40 text-yellow-700',
       slots: [
-        { label: '14:20', ini: 14 * 60 + 21, fim: 15 * 60 },
+        { label: '14:21', ini: 14 * 60 + 21, fim: 15 * 60 },
         { label: '15:00', ini: 15 * 60, fim: 16 * 60 },
         { label: '16:00', ini: 16 * 60, fim: 17 * 60 },
         { label: '17:00', ini: 17 * 60, fim: 18 * 60 },
@@ -721,14 +711,14 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '19:00', ini: 19 * 60, fim: 20 * 60 },
         { label: '20:00', ini: 20 * 60, fim: 21 * 60 },
         { label: '21:00', ini: 21 * 60, fim: 22 * 60 },
-        { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 5 },
+        { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 1 },
       ],
-      turnoIni: 14 * 60 + 21, turnoFim: 22 * 60 + 5,
+      turnoIni: 14 * 60 + 21, turnoFim: 22 * 60,
     },
     {
-      nome: '3º Turno', cor: 'border-orange-500', corHeader: 'bg-orange-900/40 text-orange-300',
+      nome: '3º Turno', cor: 'border-orange-400', corHeader: 'bg-orange-100 text-orange-700',
       slots: [
-        { label: '22:00', ini: 22 * 60 + 1, fim: 23 * 60 },
+        { label: '22:01', ini: 22 * 60 + 1, fim: 23 * 60 },
         { label: '23:00', ini: 23 * 60, fim: 24 * 60 },
         { label: '00:00', ini: 0, fim: 1 * 60 },
         { label: '01:00', ini: 1 * 60, fim: 2 * 60 },
@@ -736,7 +726,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '03:00', ini: 3 * 60, fim: 4 * 60 },
         { label: '04:00', ini: 4 * 60, fim: 5 * 60 },
         { label: '05:00', ini: 5 * 60, fim: 5 * 60 + 59 },
-        { label: '05:59', ini: 5 * 60 + 59, fim: 5 * 60 + 59 },
+        { label: '05:59', ini: 5 * 60 + 59, fim: 5 * 60 + 60 },
       ],
       // 3º turno cruza meia-noite: pertence se >= 22:01 OU <= 05:59
       turnoIni: null, turnoFim: null,
@@ -745,7 +735,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
 
   // Verifica se um horário (em minutos) pertence ao 3º turno
   function is3Turno(totalMin) {
-    return totalMin >= 22 * 60 + 6 || totalMin <= 5 * 60 + 59;
+    return totalMin >= 22 * 60 + 1 || totalMin <= 5 * 60 + 59;
   }
 
   const turnoStats = useMemo(() => {
@@ -799,8 +789,8 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
   }, [efMap, filtered, selectedDay]);
 
   return (
-    <div className="bg-slate-900 border border-slate-800 rounded-xl p-4">
-      <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">
+    <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
+      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">
         Eficiência de Conferência por Hora/Turno
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -813,22 +803,22 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
             <table className="w-full text-xs">
               <tbody>
                 {turno.slots.map(slot => (
-                  <tr key={slot.label} className="border-b border-slate-800/40 table-row-hover">
-                    <td className="py-1.5 px-3 font-mono text-slate-400 w-16">{slot.label}</td>
+                  <tr key={slot.label} className="border-b border-slate-200 table-row-hover">
+                    <td className="py-1.5 px-3 font-mono text-slate-500 w-16">{slot.label}</td>
                     <td className={`py-1.5 px-2 text-center text-lg font-bold w-8 ${getEficienciaColor(slot.taxa)}`}>
                       {getEficienciaIcon(slot.taxa)}
                     </td>
-                    <td className="py-1.5 px-3 text-right font-mono font-bold text-slate-200">
+                    <td className="py-1.5 px-3 text-right font-mono font-bold text-slate-800">
                       {slot.count}
                     </td>
                   </tr>
                 ))}
               </tbody>
               <tfoot>
-                <tr className="border-t border-slate-700 bg-slate-800/40">
+                <tr className="border-t border-slate-300 bg-slate-100">
                   <td colSpan={3} className="py-2 px-3 text-xs font-bold">
-                    <span className="text-slate-400">TOTAL: </span>
-                    <span className="font-mono text-blue-300">{turno.totalCargas}</span>
+                    <span className="text-slate-600">TOTAL: </span>
+                    <span className="font-mono text-blue-700">{turno.totalCargas}</span>
                     <span className="text-slate-600 mx-1">|</span>
                     <span className={`font-mono font-bold ${getEficienciaColor(turno.taxaGeral)}`}>
                       {turno.taxaGeral !== null ? turno.taxaGeral.toFixed(1) : '--'} reg/h
@@ -848,7 +838,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
 }
 
 // ─── DASHBOARD: CARGAS EM DOCA ────────────────────────────────
-function DashboardDoca({ data, dbState }) {
+function DashboardDoca({ data, dbState, efMap }) {
   const now = new Date();
   const conferencia = useMemo(() => {
     const vistos = new Set();
@@ -902,47 +892,52 @@ function DashboardDoca({ data, dbState }) {
         })}
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-800 flex justify-between items-center">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cargas em Doca</h3>
-          <span className="text-xs text-slate-500">{conferencia.length} cargas em conferência</span>
+      <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
+          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Cargas em Doca</h3>
+          <span className="text-xs text-slate-600">{conferencia.length} cargas em conferência</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-950">
-                <th className="text-left py-2 px-3 text-slate-500 font-semibold">CARGA</th>
-                <th className="text-left py-2 px-3 text-slate-500 font-semibold">FORNECEDOR</th>
-                <th className="text-left py-2 px-3 text-slate-500 font-semibold">MOTORISTA</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">DOCA</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">ACIONADO</th>
-                <th className="text-right py-2 px-3 text-slate-500 font-semibold">TEMPO DOCA</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">SLA</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">ORIGEM</th>
+              <tr className="border-b border-slate-300 bg-slate-100">
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">DOCA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONADO</th>
+                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO DOCA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CONFERÊNCIA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ORIGEM</th>
               </tr>
             </thead>
             <tbody>
               {conferencia.map((row, i) => (
-                <tr key={i} className={`border-b border-slate-800/30 table-row-hover ${getDocaSLABg(row.minutosDoca)}`}>
-                  <td className="py-2 px-3 font-mono text-blue-400 font-semibold">{row.carga}</td>
-                  <td className="py-2 px-3 text-slate-300 max-w-xs truncate">{row.fornecedor}</td>
-                  <td className="py-2 px-3 text-slate-400">{row.motorista}</td>
-                  <td className="py-2 px-3 text-center font-mono text-yellow-400 font-bold">{row.doca}</td>
-                  <td className="py-2 px-3 text-center font-mono text-slate-400">
+                <tr key={i} className={`border-b border-slate-200 table-row-hover ${getDocaSLABg(row.minutosDoca)}`}>
+                  <td className="py-2 px-3 font-mono text-blue-700 font-semibold">{row.carga}</td>
+                  <td className="py-2 px-3 text-slate-700 max-w-xs truncate">{row.fornecedor}</td>
+                  <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
+                  <td className="py-2 px-3 text-center font-mono text-yellow-700 font-bold">{row.doca}</td>
+                  <td className="py-2 px-3 text-center font-mono text-slate-600">
                     {row.acionado ? row.acionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--'}
                   </td>
                   <td className={`py-2 px-3 text-right font-mono font-bold text-lg ${getDocaSLAColor(row.minutosDoca)}`}>
                     {formatDuration(row.minutosDoca)}
                   </td>
                   <td className="py-2 px-3 text-center">
-                    <span className={`text-xl font-bold ${getDocaSLAColor(row.minutosDoca)}`}>
-                      {row.minutosDoca >= 240 ? '🔴' : row.minutosDoca >= 180 ? '🟠' : row.minutosDoca >= 120 ? '🟡' : '🟢'}
-                    </span>
+                    {(() => {
+                      const entry = efMap[row.carga];
+                      if (!entry || !entry.temInicio)
+                        return <span className="status-badge bg-slate-100 text-slate-500 border border-slate-300">Não iniciada</span>;
+                      if (entry.temInicio && !entry.temFim)
+                        return <span className="status-badge bg-yellow-900/50 text-yellow-700 border border-yellow-700/50">⚙ Em conferência</span>;
+                      return <span className="status-badge bg-green-900/50 text-green-700 border border-green-700/50">✓ Finalizada</span>;
+                    })()}
                   </td>
                   <td className="py-2 px-3 text-center">
                     {row.origem === 'manual'
-                      ? <span className="status-badge bg-green-900/50 text-green-300 border border-green-700/50">✓ Acionado</span>
-                      : <span className="status-badge bg-blue-900/50 text-blue-300 border border-blue-700/50">⚙ Continum</span>
+                      ? <span className="status-badge bg-green-900/50 text-green-700 border border-green-700/50">✓ Acionado</span>
+                      : <span className="status-badge bg-blue-900/50 text-blue-700 border border-blue-700/50">⚙ Continum</span>
                     }
                   </td>
                 </tr>
@@ -1004,35 +999,35 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
         })}
       </div>
 
-      <div className="bg-slate-900 border border-slate-800 rounded-xl overflow-hidden">
-        <div className="px-4 py-3 border-b border-slate-800">
-          <h3 className="text-xs font-bold text-slate-400 uppercase tracking-widest">Aguardando Acionamento — {aguardando.length} cargas</h3>
+      <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-4 py-3 border-b border-slate-300">
+          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento — {aguardando.length} cargas</h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
-              <tr className="border-b border-slate-800 bg-slate-950">
-                <th className="text-left py-2 px-3 text-slate-500 font-semibold">CARGA</th>
-                <th className="text-left py-2 px-3 text-slate-500 font-semibold">FORNECEDOR</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">RUA</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">ETIQUETA</th>
-                <th className="text-right py-2 px-3 text-slate-500 font-semibold">TEMPO TOTAL</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">CONTATO</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">LIBERAÇÃO</th>
-                <th className="text-center py-2 px-3 text-slate-500 font-semibold">ACIONAMENTO</th>
+              <tr className="border-b border-slate-300 bg-slate-100">
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">RUA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ETIQUETA</th>
+                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CONTATO</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">LIBERAÇÃO</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONAMENTO</th>
               </tr>
             </thead>
             <tbody>
               {aguardando.map((row, i) => {
                 const db = dbState[row.carga] || {};
                 return (
-                  <tr key={i} className={`border-b border-slate-800/30 table-row-hover ${getAguardandoSLABg(row.minutosTotal)}`}>
-                    <td className="py-2 px-3 font-mono text-blue-400 font-semibold">{row.carga}</td>
-                    <td className="py-2 px-3 text-slate-300 max-w-xs" style={{ maxWidth: 200 }}>
+                  <tr key={i} className={`border-b border-slate-200 table-row-hover ${getAguardandoSLABg(row.minutosTotal)}`}>
+                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold">{row.carga}</td>
+                    <td className="py-2 px-3 text-slate-700 max-w-xs" style={{ maxWidth: 200 }}>
                       <div className="truncate">{row.fornecedor}</div>
                       <div className="text-slate-500 truncate">{row.motorista}</div>
                     </td>
-                    <td className="py-2 px-3 text-center font-mono font-bold text-cyan-400">{row.ruaModa}</td>
+                    <td className="py-2 px-3 text-center font-mono font-bold text-cyan-800">{row.ruaModa}</td>
                     <td className="py-2 px-3 text-center">
                       {row.temEtiqueta
                         ? <Badge color="green">SIM</Badge>
@@ -1046,7 +1041,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                         ? <Badge color="green">✓</Badge>
                         : <button
                           onClick={() => handleAction(row.carga, 'contato')}
-                          className="bg-blue-900 hover:bg-blue-700 text-blue-200 rounded px-2 py-1 text-xs font-semibold transition-all"
+                          className="bg-blue-900 hover:bg-blue-700 text-blue-700 rounded px-2 py-1 text-xs font-semibold transition-all"
                         >CONTATO</button>
                       }
                     </td>
@@ -1055,7 +1050,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                         ? <Badge color="green">✓</Badge>
                         : <button
                           onClick={() => handleAction(row.carga, 'liberacao')}
-                          className="bg-purple-900 hover:bg-purple-700 text-purple-200 rounded px-2 py-1 text-xs font-semibold transition-all"
+                          className="bg-purple-100 hover:bg-purple-200 text-purple-700 rounded px-2 py-1 text-xs font-semibold transition-all"
                         >LIBERAÇÃO</button>
                       }
                     </td>
@@ -1073,7 +1068,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                           />
                           <button
                             onClick={() => handleAcionamento(row)}
-                            className="bg-green-900 hover:bg-green-700 text-green-200 rounded px-2 py-1 text-xs font-semibold transition-all"
+                            className="bg-green-100 hover:bg-green-200 text-green-700 rounded px-2 py-1 text-xs font-semibold transition-all"
                           >✓</button>
                         </div>
                       }
@@ -1206,7 +1201,6 @@ function App() {
     const painel = document.getElementById('painel-ativo');
     if (!painel) return;
 
-    // Usa html2canvas carregado via CDN
     if (typeof html2canvas === 'undefined') {
       alert('Biblioteca de captura não carregada. Verifique sua conexão.');
       return;
@@ -1214,12 +1208,23 @@ function App() {
 
     try {
       const tabLabel = tabs.find(t => t.id === activeTab)?.label || activeTab;
-      const agora = new Date().toLocaleString('pt-BR').replace(/[/:,\s]/g, '_');
+      const agora = new Date().toLocaleString('pt-BR').replace(/[/: ,]/g, '_');
+
+      // Captura a largura real do elemento para centralizar corretamente
+      const rect = painel.getBoundingClientRect();
       const canvas = await html2canvas(painel, {
         backgroundColor: '#0d1117',
         scale: 2,
         useCORS: true,
         logging: false,
+        scrollX: -window.scrollX,
+        scrollY: -window.scrollY,
+        windowWidth: document.documentElement.scrollWidth,
+        windowHeight: document.documentElement.scrollHeight,
+        x: rect.left + window.scrollX,
+        y: rect.top + window.scrollY,
+        width: rect.width,
+        height: rect.height,
       });
       const url = canvas.toDataURL('image/png');
       const a = document.createElement('a');
@@ -1232,14 +1237,14 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-200" style={{ fontFamily: "'IBM Plex Sans',sans-serif" }}>
-      <header className="bg-slate-950 border-b border-slate-800 sticky top-0 z-50">
+    <div className="min-h-screen bg-gray-100 text-slate-900" style={{ fontFamily: "'IBM Plex Sans',sans-serif" }}>
+      <header className="bg-white border-b border-slate-300 sticky top-0 z-50">
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">🚛</div>
             <div>
-              <h1 className="text-sm font-bold text-slate-100 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
-              <p className="text-xs text-slate-500">Recebimento em Tempo Real — CD 910</p>
+              <h1 className="text-sm font-bold text-slate-800 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
+              <p className="text-xs text-slate-600">Recebimento em Tempo Real — CD 910</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -1249,13 +1254,13 @@ function App() {
               </span>
             )}
             {servidorOk === true && (
-              <span className="text-xs text-green-400 flex items-center gap-2">
+              <span className="text-xs text-green-700 flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                 Servidor online · Sincroniza a cada 1 min
               </span>
             )}
             {servidorOk === false && (
-              <span className="text-xs text-red-400 flex items-center gap-2">
+              <span className="text-xs text-red-700 flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-red-400"></span>
                 Servidor offline
               </span>
@@ -1275,18 +1280,18 @@ function App() {
 
         {continuumData.length > 0 && (
           <>
-            <div className="flex items-center justify-between border-b border-slate-800">
+            <div className="flex items-center justify-between border-b border-slate-300">
               <div className="flex gap-1">
                 {tabs.map(tab => (
                   <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-                    className={`px-4 py-2 text-xs font-semibold transition-all ${activeTab === tab.id ? 'tab-active text-blue-400' : 'text-slate-500 hover:text-slate-300'}`}>
+                    className={`px-4 py-2 text-xs font-semibold transition-all ${activeTab === tab.id ? 'tab-active text-blue-700' : 'text-slate-600 hover:text-slate-900'}`}>
                     {tab.label}
                   </button>
                 ))}
               </div>
               <button
                 onClick={handleCaptura}
-                className="mb-1 flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border border-slate-700"
+                className="mb-1 flex items-center gap-2 bg-slate-100 hover:bg-slate-700 text-slate-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border border-slate-300"
                 title="Capturar tela do painel atual"
               >
                 📷 Capturar Tela
@@ -1295,7 +1300,7 @@ function App() {
             <div className="pb-8" id="painel-ativo">
               {activeTab === 'geral' && <DashboardGeral data={continuumData} />}
               {activeTab === 'eficiencia' && <DashboardEficiencia data={continuumData} efMap={efMap} />}
-              {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} />}
+              {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} />}
               {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} />}
             </div>
           </>
