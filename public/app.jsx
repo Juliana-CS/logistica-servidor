@@ -574,40 +574,44 @@ function DashboardEficiencia({ data, efMap }) {
       </div>
 
       {/* Cards por turno */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {Object.entries(stats).map(([turno, { prog, fin }]) => {
-          const pct = prog > 0 ? ((fin / prog) * 100).toFixed(2) : '0.00';
-          return (
-            <div key={turno} className="bg-slate-900 border border-slate-700 rounded-xl p-5">
-              <div className="flex items-center justify-between mb-4">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{turno}</span>
-                <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
-                  {pct}%
-                </Badge>
-              </div>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-                  <p className="text-xs text-slate-500">Programado</p>
-                  <p className="text-2xl font-mono font-bold text-slate-200">{prog}</p>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Cards compactos em coluna */}
+        <div className="flex flex-col gap-3">
+          {Object.entries(stats).map(([turno, { prog, fin }]) => {
+            const pct = prog > 0 ? ((fin / prog) * 100).toFixed(1) : '0.0';
+            return (
+              <div key={turno} className="bg-slate-900 border border-slate-700 rounded-xl px-4 py-3">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">{turno}</span>
+                  <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
+                    {pct}%
+                  </Badge>
                 </div>
-                <div className="bg-slate-800/50 rounded-lg p-3 text-center">
-                  <p className="text-xs text-slate-500">Finalizado</p>
-                  <p className="text-2xl font-mono font-bold text-green-400">{fin}</p>
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">Prog</span>
+                    <span className="text-xl font-mono font-bold text-slate-200">{prog}</span>
+                  </div>
+                  <span className="text-slate-600">|</span>
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-slate-500">Fin</span>
+                    <span className="text-xl font-mono font-bold text-green-400">{fin}</span>
+                  </div>
+                  <div className="flex-1 bg-slate-800 rounded-full h-1.5 ml-2">
+                    <div
+                      className={`h-1.5 rounded-full transition-all ${parseFloat(pct) >= 80 ? 'bg-green-500' : parseFloat(pct) >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                      style={{ width: `${pct}%` }}
+                    />
+                  </div>
                 </div>
               </div>
-              <div className="mt-3 bg-slate-800 rounded-full h-2">
-                <div
-                  className={`h-2 rounded-full transition-all ${parseFloat(pct) >= 80 ? 'bg-green-500' : parseFloat(pct) >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                  style={{ width: `${pct}%` }}
-                />
-              </div>
-            </div>
-          );
-        })}
-      </div>
+            );
+          })}
+        </div>
 
-      {/* Gráfico comparativo de finalizados por turno */}
-      <GraficoFinalizadosTurno stats={stats} />
+        {/* Gráfico ao lado */}
+        <GraficoFinalizadosTurno stats={stats} />
+      </div>
 
       {/* Painel Eficiência de Conferência por Hora/Turno */}
       <EficienciaHoraTurno filtered={filtered} efMap={efMap} selectedDay={selectedDay} />
