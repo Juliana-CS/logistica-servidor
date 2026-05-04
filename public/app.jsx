@@ -1201,6 +1201,7 @@ function App() {
     const painel = document.getElementById('painel-ativo');
     if (!painel) return;
 
+    // Usa html2canvas carregado via CDN
     if (typeof html2canvas === 'undefined') {
       alert('Biblioteca de captura não carregada. Verifique sua conexão.');
       return;
@@ -1208,23 +1209,12 @@ function App() {
 
     try {
       const tabLabel = tabs.find(t => t.id === activeTab)?.label || activeTab;
-      const agora = new Date().toLocaleString('pt-BR').replace(/[/: ,]/g, '_');
-
-      // Captura a largura real do elemento para centralizar corretamente
-      const rect = painel.getBoundingClientRect();
+      const agora = new Date().toLocaleString('pt-BR').replace(/[/:,\s]/g, '_');
       const canvas = await html2canvas(painel, {
         backgroundColor: '#0d1117',
         scale: 2,
         useCORS: true,
         logging: false,
-        scrollX: -window.scrollX,
-        scrollY: -window.scrollY,
-        windowWidth: document.documentElement.scrollWidth,
-        windowHeight: document.documentElement.scrollHeight,
-        x: rect.left + window.scrollX,
-        y: rect.top + window.scrollY,
-        width: rect.width,
-        height: rect.height,
       });
       const url = canvas.toDataURL('image/png');
       const a = document.createElement('a');
@@ -1237,30 +1227,30 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 text-slate-900" style={{ fontFamily: "'IBM Plex Sans',sans-serif" }}>
-      <header className="bg-white border-b border-slate-300 sticky top-0 z-50">
+    <div className="min-h-screen bg-blue-50 text-slate-900" style={{ fontFamily: "'IBM Plex Sans',sans-serif" }}>
+      <header className="bg-blue-800 border-b border-slate-300 sticky top-0 z-50">
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">🚛</div>
+            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-white font-bold text-lg">🚛</div>
             <div>
-              <h1 className="text-sm font-bold text-slate-800 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
-              <p className="text-xs text-slate-600">Recebimento em Tempo Real — CD 910</p>
+              <h1 className="text-base font-bold text-gray-100 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
+              <p className="text-sm text-gray-300">Recebimento — CD 910</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
             {servidorOk === null && (
-              <span className="text-xs text-slate-500 flex items-center gap-1">
+              <span className="text-xs text-slate-800 flex items-center gap-1">
                 <span className="animate-pulse">⬤</span> Conectando...
               </span>
             )}
             {servidorOk === true && (
-              <span className="text-xs text-green-700 flex items-center gap-2">
+              <span className="text-xs text-green-500 flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-green-400 animate-pulse"></span>
                 Servidor online · Sincroniza a cada 1 min
               </span>
             )}
             {servidorOk === false && (
-              <span className="text-xs text-red-700 flex items-center gap-2">
+              <span className="text-xs text-red-500 flex items-center gap-2">
                 <span className="inline-block w-2 h-2 rounded-full bg-red-400"></span>
                 Servidor offline
               </span>
