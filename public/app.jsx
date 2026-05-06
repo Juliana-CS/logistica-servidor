@@ -313,12 +313,12 @@ function Card({ title, value, sub, color = 'blue', icon }) {
     purple: 'text-purple-700',
   };
   return (
-    <div className={`bg-white border ${border[color]} rounded-lg p-4 card-glow shadow-sm`}>
+    <div className={`bg-white border ${border[color]} rounded-lg px-5 py-2 card-glow shadow-sm`}>
       <div className="flex items-start justify-between">
         <div>
           <p className="text-sm text-slate-600 uppercase tracking-widest font-bold">{title}</p>
           <p className={`text-4xl font-bold mt-1 font-mono ${text[color]}`}>{value}</p>
-          {sub && <p className="text-xs text-slate-600 mt-1">{sub}</p>}
+          {sub && <p className="text-xs text-slate-600 mt-0">{sub}</p>}
         </div>
         {icon && <span className="text-2xl opacity-30">{icon}</span>}
       </div>
@@ -407,6 +407,7 @@ function DashboardGeral({ data }) {
 
   return (
     <div className="space-y-6">
+      {/* Filtro de data */}
       <div className="flex items-center gap-3">
         <span className="text-xs text-slate-600 uppercase tracking-widest font-semibold">Filtrar por data:</span>
         <div className="flex gap-2 flex-wrap">
@@ -423,40 +424,21 @@ function DashboardGeral({ data }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
-        <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
-        <Card title="Em Conferência" value={stats.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" />
-        <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
-      </div>
-
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-3">Programado por Dia/Turno</h3>
-          <div className="space-y-3">
-            {Object.entries(stats.byDay).sort().map(([day, info]) => (
-              <div key={day} className="border border-slate-300 rounded-lg p-3">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="font-mono text-sm text-blue-700">{day}</span>
-                  <span className="font-mono text-sm text-slate-800">{info.total} cargas</span>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  {Object.entries(info.turnos).map(([t, n]) => n > 0 && (
-                    <div key={t} className="flex items-center gap-1 text-xs bg-slate-100 rounded px-2 py-1">
-                      <span className="text-slate-600">{t.replace(' Turno', 'T')}:</span>
-                      <span className="text-slate-900 font-mono font-semibold">{n}</span>
-                      <span className="text-slate-700 font-mono">({info.total > 0 ? ((n / info.total) * 100).toFixed(0) : 0}%)</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
+      {/* Cards + Tabela Status×Data na mesma linha */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        {/* Cards 3x2 */}
+        <div className="grid grid-cols-2 gap-3 content-center">
+          <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
+          <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
+          <Card title="Em Conferência" value={stats.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" />
+          <Card title="Agendados" value={stats.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" />
+          <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="orange" />
+          <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
         </div>
 
+        {/* Tabela Status × Data */}
         <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
-          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-1">Contagem por Status × Data</h3>
-          <p className="text-xs text-slate-600 mb-3">Exibe todos os dias independente do filtro</p>
+          <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">Contagem por Status × Data</h3>
           <div className="overflow-x-auto">
             <table className="w-full text-xs">
               <thead>
@@ -497,6 +479,30 @@ function DashboardGeral({ data }) {
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      {/* Programado por Dia/Turno — linha abaixo, horizontal */}
+      <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
+        <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">Programado por Dia/Turno</h3>
+        <div className="flex gap-3 flex-wrap">
+          {Object.entries(stats.byDay).sort().map(([day, info]) => (
+            <div key={day} className="border border-slate-300 rounded-lg p-3 min-w-48 flex-1">
+              <div className="flex justify-between items-center mb-2">
+                <span className="font-mono text-sm text-blue-700">{day}</span>
+                <span className="font-mono text-sm text-slate-800">{info.total} cargas</span>
+              </div>
+              <div className="flex gap-2 flex-wrap">
+                {Object.entries(info.turnos).map(([t, n]) => n > 0 && (
+                  <div key={t} className="flex items-center gap-1 text-xs bg-slate-100 rounded px-2 py-1">
+                    <span className="text-slate-600">{t.replace(' Turno', 'T')}:</span>
+                    <span className="text-slate-900 font-mono font-semibold">{n}</span>
+                    <span className="text-slate-700 font-mono">({info.total > 0 ? ((n / info.total) * 100).toFixed(0) : 0}%)</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -576,46 +582,45 @@ function DashboardEficiencia({ data, efMap }) {
       </div>
 
       {/* Cards por turno + Gráfico na mesma linha */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-        {/* Cards compactos */}
-        <div className="flex flex-col gap-3">
-          {Object.entries(stats).map(([turno, { prog, fin }]) => {
-            const pct = prog > 0 ? ((fin / prog) * 100).toFixed(1) : '0.0';
-            return (
-              <div key={turno} className="bg-white border border-slate-300 rounded-xl px-4 py-3">
-                <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{turno}</span>
-                  <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
-                    {pct}%
-                  </Badge>
+      {/* Cards por turno — 3 na mesma linha */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        {Object.entries(stats).map(([turno, { prog, fin }]) => {
+          const pct = prog > 0 ? ((fin / prog) * 100).toFixed(1) : '0.0';
+          return (
+            <div key={turno} className="bg-white border border-slate-300 rounded-xl px-4 py-3">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{turno}</span>
+                <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
+                  {pct}%
+                </Badge>
+              </div>
+              <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-600">Prog</span>
+                  <span className="text-2xl font-mono font-bold text-slate-900">{prog}</span>
                 </div>
-                <div className="flex items-center gap-4">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-600">Prog</span>
-                    <span className="text-2xl font-mono font-bold text-slate-900">{prog}</span>
-                  </div>
-                  <span className="text-slate-600">|</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs text-slate-600">Fin</span>
-                    <span className="text-xl font-mono font-bold text-green-700">{fin}</span>
-                  </div>
-                  <div className="flex-1 bg-slate-100 rounded-full h-1.5 ml-2">
-                    <div
-                      className={`h-1.5 rounded-full transition-all ${parseFloat(pct) >= 80 ? 'bg-green-500' : parseFloat(pct) >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                      style={{ width: `${pct}%` }}
-                    />
-                  </div>
+                <span className="text-slate-400">|</span>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-slate-600">Fin</span>
+                  <span className="text-xl font-mono font-bold text-green-700">{fin}</span>
+                </div>
+                <div className="flex-1 bg-slate-100 rounded-full h-1.5 ml-2">
+                  <div
+                    className={`h-1.5 rounded-full transition-all ${parseFloat(pct) >= 80 ? 'bg-green-500' : parseFloat(pct) >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
+                    style={{ width: `${pct}%` }}
+                  />
                 </div>
               </div>
-            );
-          })}
-        </div>
-        {/* Gráfico menor */}
-        <GraficoFinalizadosTurno stats={stats} />
+            </div>
+          );
+        })}
       </div>
 
-      {/* Painel Eficiência de Conferência por Hora/Turno */}
-      <EficienciaHoraTurno filtered={filtered} efMap={efMap} selectedDay={selectedDay} />
+      {/* Gráfico | EficienciaHoraTurno — mesma linha */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+        <GraficoFinalizadosTurno stats={stats} />
+        <EficienciaHoraTurno filtered={filtered} efMap={efMap} selectedDay={selectedDay} />
+      </div>
     </div>
   );
 }
@@ -632,13 +637,15 @@ function GraficoFinalizadosTurno({ stats }) {
   const maximo = Math.max(...valores, 1);
 
   return (
-    <div className="bg-white border border-slate-300 rounded-xl p-5 shadow-sm">
-      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-5">
+    <div className="bg-white border border-gray-300 rounded-xl p-5 flex flex-col justify-center">
+      <h3 className="text-sm font-bold text-slate-500 uppercase tracking-widest mb-auto text-center w-full">
+
+
         Finalizados por Turno
       </h3>
 
       {/* Barras */}
-      <div className="flex items-end justify-around gap-4 px-2" style={{ height: 120 }}>
+      <div className="flex items-end justify-center gap-8 px-4 w-full" style={{ height: 290 }}>
         {turnos.map((t, i) => {
           const val = valores[i];
           const pct = maximo > 0 ? (val / maximo) * 100 : 0;
@@ -647,9 +654,9 @@ function GraficoFinalizadosTurno({ stats }) {
             : '0%';
 
           return (
-            <div key={t.key} className="flex flex-col items-center gap-1 flex-1">
+            <div key={t.key} className="flex flex-col items-center gap-1 w-20">
               <span className="text-sm font-mono font-bold" style={{ color: t.cor }}>{val}</span>
-              <div className="w-full flex items-end" style={{ height: 80 }}>
+              <div className="w-full flex items-end" style={{ height: 290 }}>
                 <div
                   className="w-full rounded-t-lg transition-all duration-500 flex items-end justify-center pb-1"
                   style={{ height: `${Math.max(pct, 4)}%`, backgroundColor: t.cor, boxShadow: `0 0 10px ${t.cor}55` }}
@@ -685,7 +692,7 @@ function GraficoFinalizadosTurno({ stats }) {
 function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
   const TURNOS = [
     {
-      nome: '1º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-900/40 text-blue-700',
+      nome: '1º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
       // Slots: [início_inclusive, fim_exclusive) em minutos. Último slot fecha no fim do turno.
       slots: [
         { label: '06:00', ini: 6 * 60, fim: 7 * 60 },
@@ -701,7 +708,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
       turnoIni: 6 * 60, turnoFim: 14 * 60 + 20,
     },
     {
-      nome: '2º Turno', cor: 'border-yellow-400', corHeader: 'bg-yellow-900/40 text-yellow-700',
+      nome: '2º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
       slots: [
         { label: '14:21', ini: 14 * 60 + 21, fim: 15 * 60 },
         { label: '15:00', ini: 15 * 60, fim: 16 * 60 },
@@ -716,7 +723,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
       turnoIni: 14 * 60 + 21, turnoFim: 22 * 60,
     },
     {
-      nome: '3º Turno', cor: 'border-orange-400', corHeader: 'bg-orange-100 text-orange-700',
+      nome: '3º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
       slots: [
         { label: '22:01', ini: 22 * 60 + 1, fim: 23 * 60 },
         { label: '23:00', ini: 23 * 60, fim: 24 * 60 },
@@ -790,7 +797,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
 
   return (
     <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
-      <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest mb-4">
+      <h3 className="text-sm font-bold text-slate-500 text-center uppercase tracking-widest mb-4">
         Eficiência de Conferência por Hora/Turno
       </h3>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -800,7 +807,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
               <span className="text-xs font-bold uppercase tracking-widest">{turno.nome}</span>
               <span className="text-xs font-mono font-bold">{turno.pct}</span>
             </div>
-            <table className="w-full text-xs">
+            <table className="w-full text-sm">
               <tbody>
                 {turno.slots.map(slot => (
                   <tr key={slot.label} className="border-b border-slate-200 table-row-hover">
@@ -816,12 +823,12 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
               </tbody>
               <tfoot>
                 <tr className="border-t border-slate-300 bg-slate-100">
-                  <td colSpan={3} className="py-2 px-3 text-xs font-bold">
+                  <td colSpan={3} className="py-2 px-3 text-sm font-bold">
                     <span className="text-slate-600">TOTAL: </span>
                     <span className="font-mono text-blue-700">{turno.totalCargas}</span>
                     <span className="text-slate-600 mx-1">|</span>
                     <span className={`font-mono font-bold ${getEficienciaColor(turno.taxaGeral)}`}>
-                      {turno.taxaGeral !== null ? turno.taxaGeral.toFixed(1) : '--'} reg/h
+                      {turno.taxaGeral !== null ? turno.taxaGeral.toFixed(1) : '--'} cargas/h
                     </span>
                     <span className={`ml-1 font-bold ${getEficienciaColor(turno.taxaGeral)}`}>
                       {getEficienciaIcon(turno.taxaGeral)}
