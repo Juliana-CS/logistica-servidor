@@ -850,6 +850,8 @@ function DashboardDoca({ data, dbState, efMap }) {
         const cargaInt = parseInt(carga);
         vistos.add(cargaInt);
         const rowContinum = data.find(r => r.carga === cargaInt);
+        if (!rowContinum) return false;
+        if (rowContinum?.status === 'FINALIZADO') return false;
         const ref = db.acionamento_at ? new Date(db.acionamento_at) : null;
         const minutos = ref ? diffMinutes(ref, now) : null;
         return {
