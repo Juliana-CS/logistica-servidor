@@ -930,7 +930,7 @@ function DashboardDoca({ data, dbState, efMap }) {
             </thead>
             <tbody>
               {conferencia.map((row, i) => (
-                <tr key={i} className={`border-b border-slate-200 table-row-hover ${getDocaSLABg(row.minutosDoca)}`}>
+                <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
                   <td className="py-2 px-3 font-mono text-blue-700 font-semibold">{row.carga}</td>
                   <td className="py-2 px-3 text-slate-700 max-w-xs truncate">{row.fornecedor}</td>
                   <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
