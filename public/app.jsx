@@ -435,13 +435,20 @@ function DashboardGeral({ data }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Cards 3x2 */}
-        <div className="grid grid-cols-2 gap-3 content-center">
+   <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm flex flex-col h-full">
+  
+  <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">
+    VISÃO GERAL
+  </h3>
+
+  <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
           <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
           <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
           <Card title="Em Conferência" value={stats.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" />
           <Card title="Agendados" value={stats.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" />
           <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="orange" />
           <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
+        </div>
         </div>
 
         {/* Tabela Status × Data */}
@@ -1291,7 +1298,7 @@ const exportDates = useMemo(() => {
       <header className="bg-blue-800 border-b border-slate-300 sticky top-0 z-50">
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Logo" className="h-8 w-auto" />
+            <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
             <div>
               <h1 className="text-base font-bold text-gray-100 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
               <p className="text-sm text-gray-300">Recebimento — CD 910</p>
