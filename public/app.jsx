@@ -1298,7 +1298,10 @@ const exportDates = useMemo(() => {
       <header className="bg-blue-800 border-b border-slate-300 sticky top-0 z-50">
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img src="/logo.png" alt="Logo" className="h-8 w-auto object-contain" />
+            <img
+  src="https://seeklogo.com/vector-logo/255596/assai-atacadistahttps://seeklogo.com/vector-logo/255596/assai-atacadista"
+  alt="Logo" /> 
+            
             <div>
               <h1 className="text-base font-bold text-gray-100 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
               <p className="text-sm text-gray-300">Recebimento — CD 910</p>
