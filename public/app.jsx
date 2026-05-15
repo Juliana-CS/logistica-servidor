@@ -722,7 +722,7 @@ function DashboardEficiencia({ data, efMap }) {
               <div className="flex items-center justify-between mb-2">
                 <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{turno}</span>
                 <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
-                  {pct}%
+                  {Math.min(parseFloat(pct), 100).toFixed(1)}%
                 </Badge>
               </div>
               <div className="flex items-center gap-4">
@@ -738,7 +738,7 @@ function DashboardEficiencia({ data, efMap }) {
                 <div className="flex-1 bg-slate-100 rounded-full h-1.5 ml-2">
                   <div
                     className={`h-1.5 rounded-full transition-all ${parseFloat(pct) >= 80 ? 'bg-green-500' : parseFloat(pct) >= 50 ? 'bg-yellow-500' : 'bg-red-500'}`}
-                    style={{ width: `${pct}%` }}
+                    style={{ width: `${Math.min(parseFloat(pct), 100)}%` }}
                   />
                 </div>
               </div>
