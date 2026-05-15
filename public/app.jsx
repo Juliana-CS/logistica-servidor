@@ -359,6 +359,70 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
       </div>
     </div>
   );
+} function GraficoPizzaTurnos({ filtered }) {
+  const turnos = ['1º Turno', '2º Turno', '3º Turno'];
+  const cores = ['#3b82f6', '#eab308', '#f97316'];
+  const valores = turnos.map(t => filtered.filter(r => r.turno === t).length);
+  const total = valores.reduce((a, b) => a + b, 0);
+
+  const raio = 70, cx = 90, cy = 90;
+  let anguloAtual = -Math.PI / 2;
+
+  const fatias = valores.map((val, i) => {
+    const angulo = total > 0 ? (val / total) * 2 * Math.PI : 0;
+    const x1 = cx + raio * Math.cos(anguloAtual);
+    const y1 = cy + raio * Math.sin(anguloAtual);
+    anguloAtual += angulo;
+    const x2 = cx + raio * Math.cos(anguloAtual);
+    const y2 = cy + raio * Math.sin(anguloAtual);
+    const largeArc = angulo > Math.PI ? 1 : 0;
+    const midAngulo = anguloAtual - angulo / 2;
+    const lx = cx + (raio * 0.65) * Math.cos(midAngulo);
+    const ly = cy + (raio * 0.65) * Math.sin(midAngulo);
+    return { x1, y1, x2, y2, largeArc, lx, ly, val, angulo };
+  });
+
+  return (
+    <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm flex flex-col items-center">
+      <h3 className="text-sm font-bold text-slate-600 uppercase tracking-widest mb-3 text-center">
+        Programado por Turno
+      </h3>
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        {fatias.map((f, i) => f.angulo > 0 && (
+          <path
+            key={i}
+            d={`M${cx},${cy} L${f.x1},${f.y1} A${raio},${raio} 0 ${f.largeArc} 1 ${f.x2},${f.y2} Z`}
+            fill={cores[i]}
+            stroke="white"
+            strokeWidth="2"
+          />
+        ))}
+        {fatias.map((f, i) => f.val > 0 && (
+          <text key={i} x={f.lx} y={f.ly} textAnchor="middle" dominantBaseline="middle"
+            fontSize="10" fontWeight="bold" fill="white">
+            {total > 0 ? ((f.val / total) * 100).toFixed(0) + '%' : ''}
+          </text>
+        ))}
+      </svg>
+      <div className="flex flex-col gap-1 mt-2 w-full">
+        {turnos.map((t, i) => (
+          <div key={t} className="flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2">
+              <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: cores[i] }} />
+              <span className="text-slate-600">{t}</span>
+            </div>
+            <span className="font-mono font-bold text-slate-800">
+              {valores[i]} <span className="text-slate-400">({total > 0 ? ((valores[i] / total) * 100).toFixed(0) : 0}%)</span>
+            </span>
+          </div>
+        ))}
+        <div className="border-t border-slate-200 mt-1 pt-1 flex justify-between text-xs font-bold text-slate-700">
+          <span>Total</span>
+          <span className="font-mono">{total}</span>
+        </div>
+      </div>
+    </div>
+  );
 }
 
 // ─── DASHBOARD: VISÃO GERAL ───────────────────────────────────
@@ -389,6 +453,14 @@ function DashboardGeral({ data }) {
     return { byDay, statusCount, total: filtered.length };
   }, [filtered]);
 
+  const statsGlobal = useMemo(() => {
+    const statusCount = {};
+    data.forEach(row => {
+      const st = row.status || 'DESCONHECIDO';
+      statusCount[st] = (statusCount[st] || 0) + 1;
+    });
+    return { statusCount };
+  }, [data]);
   const STATUS_ORDER = [
     'FINALIZADO', 'CONFERENCIA', 'AGENDADO',
     'NÃO COMPARECEU', 'FALTA COMPARECER',
@@ -444,8 +516,8 @@ function DashboardGeral({ data }) {
           <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
             <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
             <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
-            <Card title="Em Conferência" value={stats.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" />
-            <Card title="Agendados" value={stats.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" />
+            <Card title="Em Conferência" value={statsGlobal.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" sub='Todas as datas' />
+            <Card title="Agendados" value={statsGlobal.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" sub='Todas as datas' />
             <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="orange" />
             <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
           </div>
@@ -520,7 +592,56 @@ function DashboardGeral({ data }) {
           ))}
         </div>
       </div>
-    </div>
+
+      {/* Pizza + Top 3 por Turno */}
+      <div className="grid grid-cols-4 gap-4">
+        <GraficoPizzaTurnos filtered={filtered} />
+        <Top3Fornecedores filtered={filtered} />
+      </div></div>
+
+  );
+}
+function Top3Fornecedores({ filtered }) {
+  const turnos = [
+    { nome: '1º Turno', cor: 'border-blue-400', corHeader: 'text-blue-700' },
+    { nome: '2º Turno', cor: 'border-yellow-400', corHeader: 'text-yellow-700' },
+    { nome: '3º Turno', cor: 'border-orange-400', corHeader: 'text-orange-700' },
+  ];
+
+  const medalhas = ['🥇', '🥈', '🥉'];
+
+  const topPorTurno = turnos.map(({ nome }) => {
+    const freq = {};
+    filtered
+      .filter(r => r.turno === nome && r.fornecedor)
+      .forEach(r => { freq[r.fornecedor] = (freq[r.fornecedor] || 0) + 1; });
+    return Object.entries(freq)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3);
+  });
+
+  return (
+    <>
+      {turnos.map(({ nome, cor, corHeader }, i) => (
+        <div key={nome} className={`bg-white border ${cor} rounded-xl p-4 shadow-sm flex flex-col`}>
+          <h3 className={`text-sm font-bold uppercase tracking-widest mb-3 text-center ${corHeader}`}>
+            Top 3 — {nome}
+          </h3>
+          {topPorTurno[i].length === 0
+            ? <p className="text-xs text-slate-400 text-center mt-4">Sem dados</p>
+            : topPorTurno[i].map(([forn, qtd], j) => (
+              <div key={forn} className="flex items-center gap-2 py-2 border-b border-slate-100 last:border-0">
+                <span className="text-lg">{medalhas[j]}</span>
+                <div className="flex-1 min-w-0">
+                  <p className="text-xs font-semibold text-slate-700 truncate">{forn}</p>
+                </div>
+                <span className="font-mono font-bold text-slate-800 text-sm">{qtd}</span>
+              </div>
+            ))
+          }
+        </div>
+      ))}
+    </>
   );
 }
 
