@@ -365,7 +365,7 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
   const valores = turnos.map(t => filtered.filter(r => r.turno === t).length);
   const total = valores.reduce((a, b) => a + b, 0);
 
-  const raio = 70, cx = 90, cy = 90;
+  const raio = 90, cx = 90, cy = 90;
   let anguloAtual = -Math.PI / 2;
 
   const fatias = valores.map((val, i) => {
@@ -387,38 +387,33 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
       <h3 className="text-sm font-bold text-slate-600 uppercase tracking-widest mb-3 text-center">
         Programado por Turno
       </h3>
-      <svg width="180" height="180" viewBox="0 0 180 180">
-        {fatias.map((f, i) => f.angulo > 0 && (
-          <path
-            key={i}
-            d={`M${cx},${cy} L${f.x1},${f.y1} A${raio},${raio} 0 ${f.largeArc} 1 ${f.x2},${f.y2} Z`}
-            fill={cores[i]}
-            stroke="white"
-            strokeWidth="2"
-          />
-        ))}
-        {fatias.map((f, i) => f.val > 0 && (
-          <text key={i} x={f.lx} y={f.ly} textAnchor="middle" dominantBaseline="middle"
-            fontSize="10" fontWeight="bold" fill="white">
-            {total > 0 ? ((f.val / total) * 100).toFixed(0) + '%' : ''}
-          </text>
-        ))}
-      </svg>
-      <div className="flex flex-col gap-1 mt-2 w-full">
-        {turnos.map((t, i) => (
-          <div key={t} className="flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: cores[i] }} />
-              <span className="text-slate-600">{t}</span>
+      <div className="flex items-center gap-4">
+        <svg width="140" height="140" viewBox="0 0 180 180">
+          {fatias.map((f, i) => f.angulo > 0 && (
+            <path
+              key={i}
+              d={`M${cx},${cy} L${f.x1},${f.y1} A${raio},${raio} 0 ${f.largeArc} 1 ${f.x2},${f.y2} Z`}
+              fill={cores[i]}
+              stroke="white"
+              strokeWidth="2"
+            />
+          ))}
+          {fatias.map((f, i) => f.val > 0 && (
+            <text key={i} x={f.lx} y={f.ly} textAnchor="middle" dominantBaseline="middle"
+              fontSize="10" fontWeight="bold" fill="white">
+              {total > 0 ? ((f.val / total) * 100).toFixed(0) + '%' : ''}
+            </text>
+          ))}
+        </svg>
+
+        <div className="flex flex-col gap-2">
+          {turnos.map((t, i) => (
+            <div key={t} className="flex items-center gap-2 text-xs">
+              <span className="w-3 h-3 rounded-sm inline-block flex-shrink-0" style={{ backgroundColor: cores[i] }} />
+              <span className="text-slate-600">{t.replace('º Turno', 'º T')}</span>
+              <span className="font-mono font-bold text-slate-800">— {valores[i]}</span>
             </div>
-            <span className="font-mono font-bold text-slate-800">
-              {valores[i]} <span className="text-slate-400">({total > 0 ? ((valores[i] / total) * 100).toFixed(0) : 0}%)</span>
-            </span>
-          </div>
-        ))}
-        <div className="border-t border-slate-200 mt-1 pt-1 flex justify-between text-xs font-bold text-slate-700">
-          <span>Total</span>
-          <span className="font-mono">{total}</span>
+          ))}
         </div>
       </div>
     </div>
@@ -537,7 +532,7 @@ function DashboardGeral({ data }) {
                   <th className="text-center py-2 px-2 text-slate-700 font-semibold">Total</th>
                 </tr>
               </thead>
-              <tbody>
+              <tbody>h
                 {crossTab.statuses.map(st => {
                   const rowTotal = allDays.reduce((acc, d) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
                   return (
@@ -604,11 +599,11 @@ function DashboardGeral({ data }) {
 function Top3Fornecedores({ filtered }) {
   const turnos = [
     { nome: '1º Turno', cor: 'border-blue-400', corHeader: 'text-blue-700' },
-    { nome: '2º Turno', cor: 'border-yellow-400', corHeader: 'text-yellow-700' },
-    { nome: '3º Turno', cor: 'border-orange-400', corHeader: 'text-orange-700' },
+    { nome: '2º Turno', cor: 'border-blue-400', corHeader: 'text-blue-700' },
+    { nome: '3º Turno', cor: 'border-blue-400', corHeader: 'text-blue-700' },
   ];
 
-  const medalhas = ['🥇', '🥈', '🥉'];
+  const medalhas = ['1º', '2º', '3º', '4º', '5º'];
 
   const topPorTurno = turnos.map(({ nome }) => {
     const freq = {};
@@ -617,23 +612,23 @@ function Top3Fornecedores({ filtered }) {
       .forEach(r => { freq[r.fornecedor] = (freq[r.fornecedor] || 0) + 1; });
     return Object.entries(freq)
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 3);
+      .slice(0, 5);
   });
 
   return (
     <>
       {turnos.map(({ nome, cor, corHeader }, i) => (
-        <div key={nome} className={`bg-white border ${cor} rounded-xl p-4 shadow-sm flex flex-col`}>
-          <h3 className={`text-sm font-bold uppercase tracking-widest mb-3 text-center ${corHeader}`}>
-            Top 3 — {nome}
+        <div key={nome} className={`bg-white border ${cor} rounded-xl p-4 shadow-sm flex flex-col justify-center`}>
+          <h3 className={`text-sm font-bold uppercase tracking-widest mb-3 text-center self-stretch ${corHeader}`}>
+            Top 5 — {nome}
           </h3>
           {topPorTurno[i].length === 0
             ? <p className="text-xs text-slate-400 text-center mt-4">Sem dados</p>
             : topPorTurno[i].map(([forn, qtd], j) => (
               <div key={forn} className="flex items-center gap-2 py-2 border-b border-slate-100 last:border-0">
-                <span className="text-lg">{medalhas[j]}</span>
+                <span className="text-sm font-bold text-blue-700">{medalhas[j]}</span>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-slate-700 truncate">{forn}</p>
+                  <p className="text-xs font-normal text-slate-700 truncate">{forn}</p>
                 </div>
                 <span className="font-mono font-bold text-slate-800 text-sm">{qtd}</span>
               </div>
