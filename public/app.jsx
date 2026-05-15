@@ -532,7 +532,7 @@ function DashboardGeral({ data }) {
                   <th className="text-center py-2 px-2 text-slate-700 font-semibold">Total</th>
                 </tr>
               </thead>
-              <tbody>h
+              <tbody>
                 {crossTab.statuses.map(st => {
                   const rowTotal = allDays.reduce((acc, d) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
                   return (
