@@ -1298,9 +1298,8 @@ function App() {
       <header className="bg-blue-800 border-b border-slate-300 sticky top-0 z-50">
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <img
-              src="https://seeklogo.com/vector-logo/255596/assai-atacadistahttps://seeklogo.com/vector-logo/255596/assai-atacadista"
-              alt="Logo" />
+
+            <div className="w-8 h-8 bg-blue-600 rounded flex items-center justify-center text-white font-bold text-sm">🚛</div>
 
             <div>
               <h1 className="text-base font-bold text-gray-100 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
