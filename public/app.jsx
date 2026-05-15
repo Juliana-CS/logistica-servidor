@@ -30,8 +30,8 @@ function getTurno(date) {
   const h = date.getHours();
   const m = date.getMinutes();
   const total = h * 60 + m;
-  if (total >= 6 * 60 && total <= 14 * 60 + 20) return '1º Turno';   // 06:00–14:20
-  if (total >= 14 * 60 + 21 && total <= 22 * 60) return '2º Turno';  // 14:21–22:00
+  if (total >= 6 * 60 && total < 14 * 60) return '1º Turno';   // 06:00–14:20
+  if (total >= 14 * 60 && total < 22 * 60) return '2º Turno';  // 14:21–22:00
   return '3º Turno';                                                   // 22:01–05:59
 }
 
@@ -327,7 +327,7 @@ function Card({ title, value, sub, color = 'blue', icon }) {
 }
 
 // ─── UPLOAD DE BASES ─────────────────────────────────────────
-function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar}) {
+function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
   const fileInput = (label, accept, onChange, isLoaded) => (
     <label className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed rounded-lg p-3 cursor-pointer transition-all
       ${isLoaded ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-blue-600 bg-white/80'}`}
@@ -342,16 +342,16 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar}) {
   );
 
   return (
-  <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
-  <div className="flex items-center justify-between mb-3">
-    <div className="flex items-center gap-2">
-      <div className="pulse-dot"></div>
-      <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Upload de Bases</h2>
-    </div>
-    <button onClick={onExportar} className="bg-blue-100 hover:bg-black text-blue-800 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
-      📊 Exportar Excel
-    </button>
-  </div>
+    <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-2">
+          <div className="pulse-dot"></div>
+          <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Upload de Bases</h2>
+        </div>
+        <button onClick={onExportar} className="bg-blue-100 hover:bg-black text-blue-800 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
+          📊 Exportar Excel
+        </button>
+      </div>
       <div className="flex flex-wrap gap-3">
         {fileInput('Base Continum (.xls)', '.xls,.xlsx,.html', onContinum, loaded.continum)}
         {fileInput('Conferência (.txt)', '.txt,.csv', onConf, loaded.conf)}
@@ -435,20 +435,20 @@ function DashboardGeral({ data }) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
 
         {/* Cards 3x2 */}
-   <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm flex flex-col h-full">
-  
-  <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">
-    VISÃO GERAL
-  </h3>
+        <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm flex flex-col h-full">
 
-  <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
-          <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
-          <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
-          <Card title="Em Conferência" value={stats.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" />
-          <Card title="Agendados" value={stats.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" />
-          <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="orange" />
-          <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
-        </div>
+          <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">
+            VISÃO GERAL
+          </h3>
+
+          <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
+            <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
+            <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
+            <Card title="Em Conferência" value={stats.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" />
+            <Card title="Agendados" value={stats.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" />
+            <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="orange" />
+            <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
+          </div>
         </div>
 
         {/* Tabela Status × Data */}
@@ -527,7 +527,7 @@ function DashboardGeral({ data }) {
 // Turno pelo total de minutos (0-1439), sem precisar de Date object
 function getTurnoByMin(totalMin) {
   if (totalMin === null || totalMin === undefined) return null;
-  if (totalMin >= 6 * 60 && totalMin <= 14 * 60 + 20) return '1º Turno';
+  if (totalMin >= 6 * 60 && totalMin <= 14 * 60 + 21) return '1º Turno';
   if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60) return '2º Turno';
   return '3º Turno';
 }
@@ -554,9 +554,9 @@ function DashboardEficiencia({ data, efMap }) {
 
   const stats = useMemo(() => {
     const turnos = {
-      '1º Turno': { prog: 0, fin: 0, turnoIni: 6 * 60, turnoFim: 14 * 60 + 20 },
-      '2º Turno': { prog: 0, fin: 0, turnoIni: 14 * 60 + 21, turnoFim: 22 * 60 },
-      '3º Turno': { prog: 0, fin: 0, turnoIni: 22 * 60 + 1, turnoFim: 5 * 60 + 59 },
+      '1º Turno': { prog: 0, fin: 0, turnoIni: 6 * 60, turnoFim: 14 * 60 + 25 },
+      '2º Turno': { prog: 0, fin: 0, turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 + 5 },
+      '3º Turno': { prog: 0, fin: 0, turnoIni: 22 * 60 + 6, turnoFim: 5 * 60 + 59 },
     };
 
     // PROGRAMADO: Continum filtrado por data
@@ -570,8 +570,8 @@ function DashboardEficiencia({ data, efMap }) {
       if (entry.fimConfDia === null || entry.fimConfMin === null) return;
       if (selectedDay !== '__all__' && entry.fimConfDia !== selectedDay) return;
       const m = entry.fimConfMin;
-      const t = m >= 6 * 60 && m <= 14 * 60 + 20 ? '1º Turno'
-        : m >= 14 * 60 + 21 && m <= 22 * 60 ? '2º Turno'
+      const t = m >= 6 * 60 && m <= 14 * 60 + 25 ? '1º Turno'
+        : m >= 14 * 60 + 25 && m <= 22 * 60 + 5 ? '2º Turno'
           : '3º Turno';
       if (turnos[t]) turnos[t].fin++;
     });
@@ -718,14 +718,14 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '11:00', ini: 11 * 60, fim: 12 * 60 },
         { label: '12:00', ini: 12 * 60, fim: 13 * 60 },
         { label: '13:00', ini: 13 * 60, fim: 14 * 60 },
-        { label: '14:00', ini: 14 * 60, fim: 14 * 60 + 20 },
+        { label: '14:00', ini: 14 * 60, fim: 14 * 60 + 25 },
       ],
-      turnoIni: 6 * 60, turnoFim: 14 * 60 + 20,
+      turnoIni: 6 * 60, turnoFim: 14 * 60 + 25,
     },
     {
       nome: '2º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
       slots: [
-        { label: '14:21', ini: 14 * 60 + 21, fim: 15 * 60 },
+        { label: '14:20', ini: 14 * 60 + 26, fim: 15 * 60 },
         { label: '15:00', ini: 15 * 60, fim: 16 * 60 },
         { label: '16:00', ini: 16 * 60, fim: 17 * 60 },
         { label: '17:00', ini: 17 * 60, fim: 18 * 60 },
@@ -733,14 +733,14 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '19:00', ini: 19 * 60, fim: 20 * 60 },
         { label: '20:00', ini: 20 * 60, fim: 21 * 60 },
         { label: '21:00', ini: 21 * 60, fim: 22 * 60 },
-        { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 1 },
+        { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 5 },
       ],
-      turnoIni: 14 * 60 + 21, turnoFim: 22 * 60,
+      turnoIni: 14 * 60 + 26, turnoFim: 22 * 60,
     },
     {
       nome: '3º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
       slots: [
-        { label: '22:01', ini: 22 * 60 + 1, fim: 23 * 60 },
+        { label: '22:00', ini: 22 * 60 + 5, fim: 23 * 60 },
         { label: '23:00', ini: 23 * 60, fim: 24 * 60 },
         { label: '00:00', ini: 0, fim: 1 * 60 },
         { label: '01:00', ini: 1 * 60, fim: 2 * 60 },
@@ -1007,7 +1007,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
 
   return (
     <div className="space-y-4">
-            <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+      <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
         <div className="px-4 py-3 border-b border-slate-300">
           <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento — {aguardando.length} cargas</h3>
         </div>
@@ -1204,66 +1204,66 @@ function App() {
       await carregarDB();
     } catch { setError('Erro ao comunicar com o servidor.'); }
   }
-// ─── EXPORTAÇÃO EXCEL ───────────────────────────────────────
-const [showExportModal, setShowExportModal] = useState(false);
-const [exportDate, setExportDate] = useState('');
+  // ─── EXPORTAÇÃO EXCEL ───────────────────────────────────────
+  const [showExportModal, setShowExportModal] = useState(false);
+  const [exportDate, setExportDate] = useState('');
 
-function handleExportExcel() {
-  const registros = Object.entries(dbState)
-    .filter(([, db]) => db.contato_at || db.liberacao_at || db.acionamento_at)
-    .map(([carga, db]) => {
-      const cargaInt = parseInt(carga);
-      const rowCont = continuumData.find(r => r.carga === cargaInt);
-      const refDate = db.acionamento_at || db.liberacao_at || db.contato_at;
-      if (exportDate && refDate) {
-        const d = new Date(refDate);
-        const dKey = `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`;
-        if (dKey !== exportDate) return null;
-      }
-      function fmtDt(iso) {
-        if (!iso) return '';
-        const d = new Date(iso);
-        return `${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2,'0')}:${d.getMinutes().toString().padStart(2,'0')}`;
-      }
-      return {
-        'Carga':                   cargaInt,
-        'Fornecedor':              db.fornecedor || rowCont?.fornecedor || '',
-        'Motorista':               db.motorista  || rowCont?.motorista  || '',
-        'Doca':                    db.doca || '',
-        'Data/Hora Contato':       fmtDt(db.contato_at),
-        'Data/Hora Liberação':     fmtDt(db.liberacao_at),
-        'Data/Hora Acionamento':   fmtDt(db.acionamento_at),
-      };
-    })
-    .filter(Boolean);
+  function handleExportExcel() {
+    const registros = Object.entries(dbState)
+      .filter(([, db]) => db.contato_at || db.liberacao_at || db.acionamento_at)
+      .map(([carga, db]) => {
+        const cargaInt = parseInt(carga);
+        const rowCont = continuumData.find(r => r.carga === cargaInt);
+        const refDate = db.acionamento_at || db.liberacao_at || db.contato_at;
+        if (exportDate && refDate) {
+          const d = new Date(refDate);
+          const dKey = `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
+          if (dKey !== exportDate) return null;
+        }
+        function fmtDt(iso) {
+          if (!iso) return '';
+          const d = new Date(iso);
+          return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}/${d.getFullYear()} ${d.getHours().toString().padStart(2, '0')}:${d.getMinutes().toString().padStart(2, '0')}`;
+        }
+        return {
+          'Carga': cargaInt,
+          'Fornecedor': db.fornecedor || rowCont?.fornecedor || '',
+          'Motorista': db.motorista || rowCont?.motorista || '',
+          'Doca': db.doca || '',
+          'Data/Hora Contato': fmtDt(db.contato_at),
+          'Data/Hora Liberação': fmtDt(db.liberacao_at),
+          'Data/Hora Acionamento': fmtDt(db.acionamento_at),
+        };
+      })
+      .filter(Boolean);
 
-  if (registros.length === 0) {
-    alert('Nenhum registro encontrado para a data selecionada.');
-    return;
-  }
-  const cols = ['Carga','Fornecedor','Motorista','Doca','Data/Hora Contato','Data/Hora Liberação','Data/Hora Acionamento'];
-  const csv = [cols.join(';'), ...registros.map(r => cols.map(c => `"${r[c]}"`).join(';'))].join('\n');
-  const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `logistica_registros_${exportDate ? exportDate.replace('/','_') : 'todos'}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
-  setShowExportModal(false);
-}
-
-const exportDates = useMemo(() => {
-  const dates = new Set();
-  Object.values(dbState).forEach(db => {
-    const ref = db.acionamento_at || db.liberacao_at || db.contato_at;
-    if (ref) {
-      const d = new Date(ref);
-      dates.add(`${d.getDate().toString().padStart(2,'0')}/${(d.getMonth()+1).toString().padStart(2,'0')}`);
+    if (registros.length === 0) {
+      alert('Nenhum registro encontrado para a data selecionada.');
+      return;
     }
-  });
-  return Array.from(dates).sort();
-}, [dbState]);
+    const cols = ['Carga', 'Fornecedor', 'Motorista', 'Doca', 'Data/Hora Contato', 'Data/Hora Liberação', 'Data/Hora Acionamento'];
+    const csv = [cols.join(';'), ...registros.map(r => cols.map(c => `"${r[c]}"`).join(';'))].join('\n');
+    const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `logistica_registros_${exportDate ? exportDate.replace('/', '_') : 'todos'}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    setShowExportModal(false);
+  }
+
+  const exportDates = useMemo(() => {
+    const dates = new Set();
+    Object.values(dbState).forEach(db => {
+      const ref = db.acionamento_at || db.liberacao_at || db.contato_at;
+      if (ref) {
+        const d = new Date(ref);
+        dates.add(`${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`);
+      }
+    });
+    return Array.from(dates).sort();
+  }, [dbState]);
   async function handleCaptura() {
     const painel = document.getElementById('painel-ativo');
     if (!painel) return;
@@ -1299,16 +1299,16 @@ const exportDates = useMemo(() => {
         <div className="max-w-screen-2xl mx-auto px-4 py-3 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <img
-  src="https://seeklogo.com/vector-logo/255596/assai-atacadistahttps://seeklogo.com/vector-logo/255596/assai-atacadista"
-  alt="Logo" /> 
-            
+              src="https://seeklogo.com/vector-logo/255596/assai-atacadistahttps://seeklogo.com/vector-logo/255596/assai-atacadista"
+              alt="Logo" />
+
             <div>
               <h1 className="text-base font-bold text-gray-100 tracking-wide">ACOMPANHAMENTO LOGÍSTICO</h1>
               <p className="text-sm text-gray-300">Recebimento — CD 910</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
-    
+
             {servidorOk === null && (
               <span className="text-xs text-slate-800 flex items-center gap-1">
                 <span className="animate-pulse">⬤</span> Conectando...
@@ -1331,7 +1331,7 @@ const exportDates = useMemo(() => {
       </header>
 
       <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
-        <UploadSection onContinum={handleContinum} onConf={handleConf} onPaletes={handlePaletes} loaded={loaded}  onExportar={() => setShowExportModal(true)} />
+        <UploadSection onContinum={handleContinum} onConf={handleConf} onPaletes={handlePaletes} loaded={loaded} onExportar={() => setShowExportModal(true)} />
 
 
 
@@ -1376,38 +1376,38 @@ const exportDates = useMemo(() => {
         )}
       </div>
       {showExportModal && (
-  <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-2xl shadow-2xl p-6 w-96">
-      <h2 className="text-base font-bold text-slate-800 mb-1">Exportar Registros</h2>
-      <p className="font-auto text-xs mb-1">As datas disponíveis para exportação são as quatro mais recentes.</p>
-      <p className="text-xs text-slate-500 mb-4">Selecione para filtrar os registros exportados</p>
-      <div className="space-y-3 mb-5">
-        <div>
-          <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide block mb-2">Data</label>
-          <div className="flex gap-2 flex-wrap">
-            <button onClick={() => setExportDate('')}
-              className={`px-3 py-1 rounded text-xs font-semibold transition-all ${exportDate === '' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-            >Todas</button>
-            {exportDates.map(d => (
-              <button key={d} onClick={() => setExportDate(d)}
-                className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${exportDate === d ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
-              >{d}</button>
-            ))}
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 w-96">
+            <h2 className="text-base font-bold text-slate-800 mb-1">Exportar Registros</h2>
+            <p className="font-auto text-xs mb-1">As datas disponíveis para exportação são as quatro mais recentes.</p>
+            <p className="text-xs text-slate-500 mb-4">Selecione para filtrar os registros exportados</p>
+            <div className="space-y-3 mb-5">
+              <div>
+                <label className="text-xs font-semibold text-slate-600 uppercase tracking-wide block mb-2">Data</label>
+                <div className="flex gap-2 flex-wrap">
+                  <button onClick={() => setExportDate('')}
+                    className={`px-3 py-1 rounded text-xs font-semibold transition-all ${exportDate === '' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                  >Todas</button>
+                  {exportDates.map(d => (
+                    <button key={d} onClick={() => setExportDate(d)}
+                      className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${exportDate === d ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
+                    >{d}</button>
+                  ))}
+                </div>
+              </div>
+
+            </div>
+            <div className="flex gap-3 justify-end">
+              <button onClick={() => setShowExportModal(false)}
+                className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
+              >Cancelar</button>
+              <button onClick={handleExportExcel}
+                className="px-4 py-2 rounded-lg text-xs font-bold bg-green-700 hover:bg-green-600 text-white transition-all flex items-center gap-2"
+              >📊 Exportar CSV</button>
+            </div>
           </div>
         </div>
-        
-      </div>
-      <div className="flex gap-3 justify-end">
-        <button onClick={() => setShowExportModal(false)}
-          className="px-4 py-2 rounded-lg text-xs font-semibold bg-slate-100 text-slate-600 hover:bg-slate-200 transition-all"
-        >Cancelar</button>
-        <button onClick={handleExportExcel}
-          className="px-4 py-2 rounded-lg text-xs font-bold bg-green-700 hover:bg-green-600 text-white transition-all flex items-center gap-2"
-        >📊 Exportar CSV</button>
-      </div>
-    </div>
-  </div>
-)}
+      )}
     </div>
   );
 }
