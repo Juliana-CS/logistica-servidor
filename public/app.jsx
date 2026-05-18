@@ -1156,21 +1156,21 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 const db = dbState[row.carga] || {};
                 return (
                   <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold">{row.carga}</td>
-                    <td className="py-2 px-3 text-slate-700 max-w-xs" style={{ maxWidth: 200 }}>
-                      <div className="truncate">{row.fornecedor}</div>
-                      <div className="text-slate-500 truncate">{row.motorista}</div>
+                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold align-middle">{row.carga}</td>
+                    <td className="py-2 px-3 text-slate-700 align-middle ">
+                      <div className="whitespace-normal break-words">{row.fornecedor}</div>
+                      <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
                     </td>
-                    <td className="py-2 px-3 text-center font-mono font-bold text-cyan-800">{row.ruaModa}</td>
-                    <td className="py-2 px-3 text-center">
-                      {row.temEtiqueta
-                        ? <Badge color="green">SIM</Badge>
-                        : <Badge color="red">NÃO</Badge>}
-                    </td>
-                    <td className={`py-2 px-3 text-right font-mono font-bold text-base ${getAguardandoSLAColor(row.minutosTotal)}`}>
+                    <td className="py-2 px-3 text-center font-mono font-bold text-cyan-800 align-middle">{row.ruaModa}</td>
+                    <td className="py-2 px-3 text-center align-middle">
+  <span className={row.temEtiqueta ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
+    {row.temEtiqueta ? 'SIM' : 'NÃO'}
+  </span>
+</td>
+                    <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
                       {formatDuration(row.minutosTotal)}
                     </td>
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2 px-3 text-center align-middle">
                       {db.contato
                         ? <Badge color="green">✓</Badge>
                         : <button
@@ -1179,7 +1179,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                         >CONTATO</button>
                       }
                     </td>
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2 px-3 text-center align-middle">
                       {db.liberacao
                         ? <Badge color="green">✓</Badge>
                         : <button
@@ -1188,7 +1188,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                         >LIBERAÇÃO</button>
                       }
                     </td>
-                    <td className="py-2 px-3 text-center">
+                    <td className="py-2 px-3 text-center align-middle">
                       {db.acionamento
                         ? <div className="flex items-center justify-center gap-1">
                           <Badge color="green">✓ DOCA {db.doca}</Badge>
@@ -1404,7 +1404,7 @@ function App() {
       const tabLabel = tabs.find(t => t.id === activeTab)?.label || activeTab;
       const agora = new Date().toLocaleString('pt-BR').replace(/[/:,\s]/g, '_');
       const canvas = await html2canvas(painel, {
-        backgroundColor: '#0d1117',
+        backgroundColor: '#d7e4f8',
         scale: 2,
         useCORS: true,
         logging: false,
