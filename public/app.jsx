@@ -174,11 +174,21 @@ function processConf(csvText) {
     let fimConfDia = null;
     let fimConfMin = null;  // minutos do horário (0-1439)
     if (row['FINALCONF_DATA'] && row['FINALCONF_HORA']) {
-      const partes = row['FINALCONF_DATA'].trim().split('/');
-      fimConfDia = `${partes[0].padStart(2, '0')}/${partes[1].padStart(2, '0')}`;
-      const [hh, mm] = row['FINALCONF_HORA'].trim().split(':');
-      fimConfMin = parseInt(hh) * 60 + parseInt(mm);
-    }
+  const partes = row['FINALCONF_DATA'].trim().split('/');
+  const [hh, mm] = row['FINALCONF_HORA'].trim().split(':');
+  fimConfMin = parseInt(hh) * 60 + parseInt(mm);
+
+  const dia = parseInt(partes[0]);
+  const mes = parseInt(partes[1]) - 1;
+  const ano = partes[2] ? (partes[2].length === 2 ? 2000 + parseInt(partes[2]) : parseInt(partes[2])) : 2025;
+
+  const baseDate = new Date(ano, mes, dia);
+
+  // Apenas horários entre 22:00 e 23:59 pertencem ao ciclo do dia SEGUINTE
+  if (fimConfMin >= 22 * 60) baseDate.setDate(baseDate.getDate() + 1);
+
+  fimConfDia = `${baseDate.getDate().toString().padStart(2, '0')}/${(baseDate.getMonth() + 1).toString().padStart(2, '0')}`;
+}
 
     const diffH = (inicioDate && fimDate) ? (fimDate - inicioDate) / 3600000 : 0;
     const eficiencia = (diffH > 0 && qtde > 0) ? qtde / diffH : null;
