@@ -1043,9 +1043,9 @@ function DashboardDoca({ data, dbState, efMap }) {
       </div>
 
       <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 border-b border-slate-200 flex justify-between items-center">
-          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Cargas em Doca</h3>
-          <span className="text-xs text-slate-600">{conferencia.length} cargas em conferência</span>
+        <div className="px-4 py-3 border-b border-slate-200 flex items-center gap-2">
+          <h3 className="text-xs2 font-bold text-slate-600 uppercase tracking-widest">Cargas em Doca</h3>
+          <span className="text-xs1 text-slate-600">- {conferencia.length} cargas em conferência</span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
@@ -1064,7 +1064,7 @@ function DashboardDoca({ data, dbState, efMap }) {
             <tbody>
               {conferencia.map((row, i) => (
                 <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                  <td className="py-2 px-3 font-mono text-blue-700 font-semibold">{row.carga}</td>
+                  <td className="py-2 px-3 font-mono text-blue-700 font-semibold text-sm">{row.carga}</td>
                   <td className="py-2 px-3 text-slate-700 max-w-xs truncate">{row.fornecedor}</td>
                   <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
                   <td className="py-2 px-3 text-center font-mono text-yellow-700 font-bold">{row.doca}</td>
@@ -1135,7 +1135,8 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
     <div className="space-y-4">
       <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
         <div className="px-4 py-3 border-b border-slate-300">
-          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento — {aguardando.length} cargas</h3>
+          <h3 className="text-xs1 font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento </h3>
+          <span className="text-xs1 text-slate-600"> {aguardando.length} cargas </span>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
@@ -1156,7 +1157,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 const db = dbState[row.carga] || {};
                 return (
                   <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold align-middle">{row.carga}</td>
+                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold align-middle text-sm">{row.carga}</td>
                     <td className="py-2 px-3 text-slate-700 align-middle ">
                       <div className="whitespace-normal break-words">{row.fornecedor}</div>
                       <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
