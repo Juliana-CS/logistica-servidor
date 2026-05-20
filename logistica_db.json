@@ -60,5 +60,16 @@
     "doca": "25",
     "fornecedor": "NEWAGE IND E COM DE BEB E ALIM LTDA",
     "motorista": "RICARDO  SANTANA RODRIGUES"
+  },
+  "28367390": {
+    "contato": true,
+    "contato_at": "2026-05-20T18:31:30.447Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-20T18:31:32.415Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-20T18:31:35.029Z",
+    "doca": "12",
+    "fornecedor": "EMPRESA BRASILEIRA DE BEBIDAS E ALIM. S/A",
+    "motorista": "WANDERSON LIMA MONTEIRO DA SILVA"
   }
 }

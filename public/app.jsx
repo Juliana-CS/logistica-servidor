@@ -1043,10 +1043,13 @@ function DashboardDoca({ data, dbState, efMap }) {
       </div>
 
       <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-        <div className="px-4 py-3 border-b border-slate-200 flex items-center gap-2">
+        <div className="px-4 py-3 border-b border-slate-200 flex flex-col items-start gap-2">
           <h3 className="text-xs2 font-bold text-slate-600 uppercase tracking-widest">Cargas em Doca</h3>
-          <span className="text-xs1 text-slate-600">- {conferencia.length} cargas em conferência</span>
+          <span className="text-xs1 text-slate-600">{conferencia.length} cargas em conferência</span>
         </div>
+
+            
+
         <div className="overflow-x-auto">
           <table className="w-full text-xs">
             <thead>
