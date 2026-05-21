@@ -654,7 +654,7 @@ function Top3Fornecedores({ filtered }) {
 function getTurnoByMin(totalMin) {
   if (totalMin === null || totalMin === undefined) return null;
   if (totalMin >= 6 * 60 && totalMin <= 14 * 60 + 21) return '1º Turno';
-  if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60) return '2º Turno';
+  if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60+10) return '2º Turno';
   return '3º Turno';
 }
 
