@@ -859,14 +859,14 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '19:00', ini: 19 * 60, fim: 20 * 60 },
         { label: '20:00', ini: 20 * 60, fim: 21 * 60 },
         { label: '21:00', ini: 21 * 60, fim: 22 * 60 },
-        { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 5 },
+        { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 10 },
       ],
       turnoIni: 14 * 60 + 26, turnoFim: 22 * 60,
     },
     {
       nome: '3º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
       slots: [
-        { label: '22:00', ini: 22 * 60 + 5, fim: 23 * 60 },
+        { label: '22:00', ini: 22 * 60 + 11, fim: 23 * 60 },
         { label: '23:00', ini: 23 * 60, fim: 24 * 60 },
         { label: '00:00', ini: 0, fim: 1 * 60 },
         { label: '01:00', ini: 1 * 60, fim: 2 * 60 },
