@@ -1150,9 +1150,9 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">RUA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">ETIQUETA</th>
                 <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CONTATO</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">LIBERAÇÃO</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONAMENTO</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold col-acao">CONTATO</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold col-acao">LIBERAÇÃO</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold col-acao">ACIONAMENTO</th>
               </tr>
             </thead>
             <tbody>
@@ -1174,7 +1174,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                     <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
                       {formatDuration(row.minutosTotal)}
                     </td>
-                    <td className="py-2 px-3 text-center align-middle">
+                    <td className="py-2 px-3 text-center align-middle col-acao">
                       {db.contato
                         ? <Badge color="green">✓</Badge>
                         : <button
@@ -1183,7 +1183,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                         >CONTATO</button>
                       }
                     </td>
-                    <td className="py-2 px-3 text-center align-middle">
+                    <td className="py-2 px-3 text-center align-middle col-acao">
                       {db.liberacao
                         ? <Badge color="green">✓</Badge>
                         : <button
@@ -1192,7 +1192,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                         >LIBERAÇÃO</button>
                       }
                     </td>
-                    <td className="py-2 px-3 text-center align-middle">
+                    <td className="py-2 px-3 text-center align-middle col-acao">
                       {db.acionamento
                         ? <div className="flex items-center justify-center gap-1">
                           <Badge color="green">✓ DOCA {db.doca}</Badge>
@@ -1395,33 +1395,49 @@ function App() {
     return Array.from(dates).sort();
   }, [dbState]);
   async function handleCaptura() {
-    const painel = document.getElementById('painel-ativo');
-    if (!painel) return;
+  const painel = document.getElementById('painel-ativo');
+  if (!painel) return;
 
-    // Usa html2canvas carregado via CDN
-    if (typeof html2canvas === 'undefined') {
-      alert('Biblioteca de captura não carregada. Verifique sua conexão.');
-      return;
-    }
-
-    try {
-      const tabLabel = tabs.find(t => t.id === activeTab)?.label || activeTab;
-      const agora = new Date().toLocaleString('pt-BR').replace(/[/:,\s]/g, '_');
-      const canvas = await html2canvas(painel, {
-        backgroundColor: '#d7e4f8',
-        scale: 2,
-        useCORS: true,
-        logging: false,
-      });
-      const url = canvas.toDataURL('image/png');
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `logistica_${tabLabel.replace(/[^a-zA-Z0-9]/g, '_')}_${agora}.png`;
-      a.click();
-    } catch (err) {
-      alert('Erro ao capturar tela: ' + err.message);
-    }
+  if (typeof html2canvas === 'undefined') {
+    alert('Biblioteca de captura não carregada. Verifique sua conexão.');
+    return;
   }
+
+  try {
+    const tabLabel = tabs.find(t => t.id === activeTab)?.label || activeTab;
+    const agora = new Date().toLocaleString('pt-BR').replace(/[/:,\s]/g, '_');
+
+    // Oculta colunas de ação antes de capturar
+    const colsAcao = document.querySelectorAll('.col-acao');
+    colsAcao.forEach(el => el.style.display = 'none');
+
+    const canvas = await html2canvas(painel, {
+      backgroundColor: '#f0f4ff',
+      scale: 2,
+      useCORS: true,
+      logging: false,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: painel.scrollWidth,
+      windowHeight: painel.scrollHeight,
+      width: painel.scrollWidth,
+      height: painel.scrollHeight,
+    });
+
+    // Restaura colunas após captura
+    colsAcao.forEach(el => el.style.display = '');
+
+    const url = canvas.toDataURL('image/png');
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `logistica_${tabLabel.replace(/[^a-zA-Z0-9]/g, '_')}_${agora}.png`;
+    a.click();
+  } catch (err) {
+    // Garante restauração mesmo se der erro
+    document.querySelectorAll('.col-acao').forEach(el => el.style.display = '');
+    alert('Erro ao capturar tela: ' + err.message);
+  }
+}
 
   return (
     <div className="min-h-screen bg-blue-50 text-slate-900" style={{ fontFamily: "'IBM Plex Sans',sans-serif" }}>
