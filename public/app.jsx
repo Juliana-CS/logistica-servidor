@@ -654,7 +654,7 @@ function Top3Fornecedores({ filtered }) {
 function getTurnoByMin(totalMin) {
   if (totalMin === null || totalMin === undefined) return null;
   if (totalMin >= 6 * 60 && totalMin <= 14 * 60 + 21) return '1º Turno';
-  if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60+10) return '2º Turno';
+  if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60) return '2º Turno';
   return '3º Turno';
 }
 
@@ -697,7 +697,7 @@ function DashboardEficiencia({ data, efMap }) {
       if (selectedDay !== '__all__' && entry.fimConfDia !== selectedDay) return;
       const m = entry.fimConfMin;
       const t = m >= 6 * 60 && m <= 14 * 60 + 25 ? '1º Turno'
-        : m >= 14 * 60 + 25 && m <= 22 * 60 + 5 ? '2º Turno'
+        : m >= 14 * 60 + 25 && m <= 22 * 60 + 10 ? '2º Turno'
           : '3º Turno';
       if (turnos[t]) turnos[t].fin++;
     });
