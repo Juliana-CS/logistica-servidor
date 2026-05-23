@@ -861,7 +861,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '21:00', ini: 21 * 60, fim: 22 * 60 },
         { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 10 },
       ],
-      turnoIni: 14 * 60 + 26, turnoFim: 22 * 60,
+      turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 ,
     },
     {
       nome: '3º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
@@ -1011,7 +1011,9 @@ function DashboardDoca({ data, dbState, efMap }) {
           minutosDoca: minutos,
           origem: 'manual',
         };
-      });
+      })
+       .filter(Boolean); // <- adicione isso       
+      
 
     // 2. Status CONFERENCIA no Continum (que ainda não foram acionados manualmente)
     const doContinum = data
@@ -1110,15 +1112,22 @@ function DashboardDoca({ data, dbState, efMap }) {
 function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcionamento }) {
   const now = new Date();
   const [docaInputs, setDocaInputs] = useState({});
+  const [filtroEtiqueta, setFiltroEtiqueta] = useState('__all__');
 
   const aguardando = useMemo(() =>
-    data.filter(r => ['AGENDADO', 'FALTA COMPARECER'].includes(r.status) && r.chegada && !dbState[r.carga]?.acionamento).map(row => {
+    data.filter(r => ['AGENDADO', 'FALTA COMPARECER'].includes(r.status) && r.chegada && !dbState[r.carga]?.acionamento)
+    .map(row => {
       const minutosTotal = row.chegada ? diffMinutes(row.chegada, now) : null;
       const pal = palMap[row.carga] || {};
       return { ...row, minutosTotal, ruaModa: pal.ruaModa || '--', temEtiqueta: pal.temEtiqueta || false };
-    }).sort((a, b) => (b.minutosTotal || 0) - (a.minutosTotal || 0)),
-    [data, palMap]
-  );
+    })
+    .sort((a, b) => (b.minutosTotal || 0) - (a.minutosTotal || 0))
+    .filter(r => {
+      if (filtroEtiqueta === 'sim') return r.temEtiqueta;
+      if (filtroEtiqueta === 'nao') return !r.temEtiqueta;
+      return true;
+    }),
+  [data, palMap, dbState, filtroEtiqueta]);
 
   function handleAction(carga, action) {
     salvarAcao(carga, action);
@@ -1136,6 +1145,23 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
 
   return (
     <div className="space-y-4">
+      <div className="flex items-center gap-3">
+  <span className="text-xs text-slate-600 uppercase tracking-widest font-semibold">Etiqueta:</span>
+  <div className="flex gap-2">
+    <button onClick={() => setFiltroEtiqueta('__all__')}
+      className={`px-3 py-1 rounded text-xs font-semibold transition-all ${filtroEtiqueta === '__all__' ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+      Todas
+    </button>
+    <button onClick={() => setFiltroEtiqueta('sim')}
+      className={`px-3 py-1 rounded text-xs font-semibold transition-all ${filtroEtiqueta === 'sim' ? 'bg-green-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+      Com Etiqueta
+    </button>
+    <button onClick={() => setFiltroEtiqueta('nao')}
+      className={`px-3 py-1 rounded text-xs font-semibold transition-all ${filtroEtiqueta === 'nao' ? 'bg-red-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}>
+      Sem Etiqueta
+    </button>
+  </div>
+</div>
       <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
         <div className="px-4 py-3 border-b border-slate-300">
           <h3 className="text-xs1 font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento </h3>
