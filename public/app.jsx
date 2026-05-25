@@ -681,8 +681,8 @@ function DashboardEficiencia({ data, efMap }) {
   const stats = useMemo(() => {
     const turnos = {
       '1º Turno': { prog: 0, fin: 0, turnoIni: 6 * 60, turnoFim: 14 * 60 + 25 },
-      '2º Turno': { prog: 0, fin: 0, turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 + 5 },
-      '3º Turno': { prog: 0, fin: 0, turnoIni: 22 * 60 + 6, turnoFim: 5 * 60 + 59 },
+      '2º Turno': { prog: 0, fin: 0, turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 + 10 },
+      '3º Turno': { prog: 0, fin: 0, turnoIni: 22 * 60 + 11, turnoFim: 5 * 60 + 59 },
     };
 
     // PROGRAMADO: Continum filtrado por data
@@ -861,7 +861,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
         { label: '21:00', ini: 21 * 60, fim: 22 * 60 },
         { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 10 },
       ],
-      turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 ,
+      turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 +10,
     },
     {
       nome: '3º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
@@ -883,7 +883,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
 
   // Verifica se um horário (em minutos) pertence ao 3º turno
   function is3Turno(totalMin) {
-    return totalMin >= 22 * 60 + 1 || totalMin <= 5 * 60 + 59;
+    return totalMin >= 22 * 60 + 11 || totalMin <= 5 * 60 + 59;
   }
 
   const turnoStats = useMemo(() => {
@@ -917,7 +917,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
       const totalCargas = slots.reduce((a, s) => a + s.count, 0);
 
       const duracaoTurnoH = turno.nome === '3º Turno'
-        ? ((24 * 60 - (22 * 60 + 1)) + (5 * 60 + 59 + 1)) / 60
+        ? ((24 * 60 - (22 * 60 + 11)) + (5 * 60 + 59 + 1)) / 60
         : (turno.turnoFim - turno.turnoIni) / 60;
 
       const taxaGeral = duracaoTurnoH > 0 && totalCargas > 0
