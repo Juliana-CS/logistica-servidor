@@ -106,6 +106,12 @@
     "fornecedor": "AMBEV S.A",
     "motorista": "CLEBER VIEIRA  SA SILVA"
   },
+  "27852196": {
+    "contato": true,
+    "contato_at": "2026-05-25T12:36:16.627Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:36:21.085Z"
+  },
   "27853312": {
     "contato": true,
     "contato_at": "2026-05-25T12:22:18.185Z",
@@ -116,6 +122,10 @@
     "doca": "4",
     "fornecedor": "AMBEV S.A",
     "motorista": "LUCAS HENRIQUE MOREIRA LIMA"
+  },
+  "27855617": {
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:36:26.902Z"
   },
   "27856178": {
     "contato": true,

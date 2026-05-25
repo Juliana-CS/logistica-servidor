@@ -1203,24 +1203,37 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                       {formatDuration(row.minutosTotal)}
                     </td>
                     <td className="py-2 px-3 text-center align-middle col-acao">
-                      {db.contato
-                        ? <Badge color="green">✓</Badge>
-                        : <button
-                          onClick={() => handleAction(row.carga, 'contato')}
-                          className="bg-blue-100 hover:bg-blue-700 text-blue-700 rounded px-2 py-1 text-xs font-semibold transition-all"
-                        >CONTATO</button>
-                      }
-                    </td>
-                    <td className="py-2 px-3 text-center align-middle col-acao">
-                      {db.liberacao
-                        ? <Badge color="green">✓</Badge>
-                        : <button
-                          onClick={() => handleAction(row.carga, 'liberacao')}
-                          className="bg-purple-100 hover:bg-purple-200 text-purple-700 rounded px-2 py-1 text-xs font-semibold transition-all"
-                        >LIBERAÇÃO</button>
-                      }
-                    </td>
-                    <td className="py-2 px-3 text-center align-middle col-acao">
+  {db.contato
+    ? <div className="flex flex-col items-center gap-0.5">
+        <Badge color="green">✓</Badge>
+        {db.contato_at && (
+          <span className="text-slate-400 text-xs font-mono">
+            {new Date(db.contato_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        )}
+      </div>
+    : <button
+        onClick={() => handleAction(row.carga, 'contato')}
+        className="bg-blue-100 hover:bg-blue-700 text-blue-700 rounded px-2 py-1 text-xs font-semibold transition-all"
+      >CONTATO</button>
+  }
+</td>
+<td className="py-2 px-3 text-center align-middle col-acao">
+  {db.liberacao
+    ? <div className="flex flex-col items-center gap-0.5">
+        <Badge color="green">✓</Badge>
+        {db.liberacao_at && (
+          <span className="text-slate-400 text-xs font-mono">
+            {new Date(db.liberacao_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+          </span>
+        )}
+      </div>
+    : <button
+        onClick={() => handleAction(row.carga, 'liberacao')}
+        className="bg-purple-100 hover:bg-purple-200 text-purple-700 rounded px-2 py-1 text-xs font-semibold transition-all"
+      >LIBERAÇÃO</button>
+  }
+</td><td className="py-2 px-3 text-center align-middle col-acao">
                       {db.acionamento
                         ? <div className="flex items-center justify-center gap-1">
                           <Badge color="green">✓ DOCA {db.doca}</Badge>
