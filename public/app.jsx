@@ -1182,7 +1182,13 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 return (
                   <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
                     <td className="py-2 px-3 text-center font-mono font-bold text-slate-500 align-middle">{i + 1}°</td>
-                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold align-middle text-sm">{row.carga}</td>
+                    <td className="py-2 px-3 font-mono font-semibold align-middle text-sm">
+  {row.carga ? (
+    <span className="text-blue-700">{row.carga}</span>
+  ) : (
+    <span className="text-orange-600 text-xs">EM DIVERGÊNCIA</span>
+  )}
+</td>
                     <td className="py-2 px-3 text-slate-700 align-middle ">
                       <div className="whitespace-normal break-words">{row.fornecedor}</div>
                       <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
