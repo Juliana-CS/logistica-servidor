@@ -1009,7 +1009,6 @@ function DashboardDoca({ data, dbState, efMap }) {
           doca: db.doca,
           acionado: ref,
           minutosDoca: minutos,
-          origem: 'manual',
         };
       })
        .filter(Boolean); // <- adicione isso       
@@ -1021,7 +1020,7 @@ function DashboardDoca({ data, dbState, efMap }) {
       .map(row => {
         const ref = row.acionado || row.chegada;
         const minutos = ref ? diffMinutes(ref, now) : null;
-        return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos, origem: 'continum' };
+        return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos };
       });
 
     return [...manuais, ...doContinum]
@@ -1063,7 +1062,7 @@ function DashboardDoca({ data, dbState, efMap }) {
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONADO</th>
                 <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO DOCA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">CONFERÊNCIA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ORIGEM</th>
+                
               </tr>
             </thead>
             <tbody>
@@ -1089,12 +1088,7 @@ function DashboardDoca({ data, dbState, efMap }) {
                       return <span className="status-badge bg-green-900/50 text-green-700 border border-green-700/50">✓ Finalizada</span>;
                     })()}
                   </td>
-                  <td className="py-2 px-3 text-center">
-                    {row.origem === 'manual'
-                      ? <span className="status-badge bg-green-900/50 text-green-700 border border-green-700/50">✓ Acionado</span>
-                      : <span className="status-badge bg-blue-900/50 text-blue-700 border border-blue-700/50">⚙ Continum</span>
-                    }
-                  </td>
+                
                 </tr>
               ))}
               {conferencia.length === 0 && (
