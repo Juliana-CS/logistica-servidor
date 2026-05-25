@@ -14,7 +14,12 @@
     "contato": true,
     "contato_at": "2026-05-07T10:08:25.634Z",
     "liberacao": true,
-    "liberacao_at": "2026-05-07T10:08:26.526Z"
+    "liberacao_at": "2026-05-07T10:08:26.526Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:28:12.337Z",
+    "doca": "13",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "REGINALDO SILVA DOS SANTOS"
   },
   "27847528": {
     "contato": true,
@@ -37,7 +42,14 @@
   },
   "27847537": {
     "contato": true,
-    "contato_at": "2026-05-07T10:08:23.556Z"
+    "contato_at": "2026-05-07T10:08:23.556Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:20:31.050Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:20:37.857Z",
+    "doca": "15",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "VALDIR DONIZETE DE SOUZA"
   },
   "27848271": {
     "contato": true,
@@ -50,9 +62,64 @@
     "fornecedor": "ADIMAX IND E COMERCIO DE ALIMENTOS LTDA",
     "motorista": "ANTONIO CARLOS DE LIMA"
   },
+  "27848500": {
+    "contato": true,
+    "contato_at": "2026-05-25T12:26:37.303Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:21:03.620Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:21:09.093Z",
+    "doca": "15",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "DANIEL ANTONIO SOARES"
+  },
+  "27848542": {
+    "contato": true,
+    "contato_at": "2026-05-25T12:22:08.919Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:22:11.240Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:22:34.039Z",
+    "doca": "1",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "MARCOS APARECIDO"
+  },
+  "27849964": {
+    "contato": true,
+    "contato_at": "2026-05-25T12:22:12.446Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:22:13.966Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:22:35.815Z",
+    "doca": "2",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "LEONARDO DAS MERCES"
+  },
+  "27850366": {
+    "contato": true,
+    "contato_at": "2026-05-25T12:22:15.188Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:22:16.186Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:22:34.509Z",
+    "doca": "3",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "CLEBER VIEIRA  SA SILVA"
+  },
+  "27853312": {
+    "contato": true,
+    "contato_at": "2026-05-25T12:22:18.185Z",
+    "liberacao": true,
+    "liberacao_at": "2026-05-25T12:22:19.199Z",
+    "acionamento": true,
+    "acionamento_at": "2026-05-25T12:22:36.996Z",
+    "doca": "4",
+    "fornecedor": "AMBEV S.A",
+    "motorista": "LUCAS HENRIQUE MOREIRA LIMA"
+  },
   "27856178": {
     "contato": true,
-    "contato_at": "2026-05-06T10:22:51.532Z",
+    "contato_at": "2026-05-25T12:23:27.211Z",
     "liberacao": true,
     "liberacao_at": "2026-05-06T10:22:52.663Z",
     "acionamento": true,

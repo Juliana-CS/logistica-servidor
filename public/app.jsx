@@ -1314,6 +1314,8 @@ useEffect(() => {
     }
   } catch (err) {
     console.error('Erro ao carregar dados salvos:', err);
+  } finally {
+    carregarDB(); // <- garante que roda após o localStorage ser lido
   }
 }, []);
 async function handleContinum(e) {
