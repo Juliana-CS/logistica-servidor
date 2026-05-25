@@ -1277,48 +1277,69 @@ function App() {
       setServidorOk(false);
     }
   }, []);
+useEffect(() => {
+  try {
+    const savedContinum = localStorage.getItem('continum_data');
+    const savedEfMap = localStorage.getItem('ef_map');
+    const savedPalMap = localStorage.getItem('pal_map');
 
-  useEffect(() => {
-    carregarDB();
-    const intervalo = setInterval(carregarDB, 60000); // 60 segundos
-    return () => clearInterval(intervalo);
-  }, [carregarDB]);
-
-  async function handleContinum(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      setError(null);
-      const text = await file.text();
-      let rows = [];
-      if (text.trim().startsWith('<') || text.includes('<table')) {
-        rows = processContinum(text);
-        if (rows.length > 0) {
-          setContinuumData(rows.map(normalizeContinum).filter(r => r.senha !== ''));
-          setLoaded(p => ({ ...p, continum: true }));
-          return;
-        }
-      }
-      const buf = await file.arrayBuffer();
-      const json = processXLSArrayBuffer(new Uint8Array(buf));
-      setContinuumData(json.map(normalizeContinum).filter(r => r.senha !== ''));
+    if (savedContinum) {
+      setContinuumData(JSON.parse(savedContinum));
       setLoaded(p => ({ ...p, continum: true }));
-    } catch (err) {
-      setError('Erro ao carregar Continum: ' + err.message);
     }
-  }
-
-  async function handleConf(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-    try {
-      const text = await file.text();
-      setEfMap(processConf(text));
+    if (savedEfMap) {
+      setEfMap(JSON.parse(savedEfMap));
       setLoaded(p => ({ ...p, conf: true }));
-    } catch (err) {
-      setError('Erro ao carregar Conferência: ' + err.message);
     }
+    if (savedPalMap) {
+      setPalMap(JSON.parse(savedPalMap));
+      setLoaded(p => ({ ...p, paletes: true }));
+    }
+  } catch (err) {
+    console.error('Erro ao carregar dados salvos:', err);
   }
+}, []);
+async function handleContinum(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    setError(null);
+    const text = await file.text();
+    let rows = [];
+    if (text.trim().startsWith('<') || text.includes('<table')) {
+      rows = processContinum(text);
+      if (rows.length > 0) {
+        const normalized = rows.map(normalizeContinum).filter(r => r.senha !== '');
+        setContinuumData(normalized);
+        localStorage.setItem('continum_data', JSON.stringify(normalized));
+        setLoaded(p => ({ ...p, continum: true }));
+        return;
+      }
+    }
+    const buf = await file.arrayBuffer();
+    const json = processXLSArrayBuffer(new Uint8Array(buf));
+    const normalized = json.map(normalizeContinum).filter(r => r.senha !== '');
+    setContinuumData(normalized);
+    localStorage.setItem('continum_data', JSON.stringify(normalized));
+    setLoaded(p => ({ ...p, continum: true }));
+  } catch (err) {
+    setError('Erro ao carregar Continum: ' + err.message);
+  }
+}
+
+async function handleConf(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  try {
+    const text = await file.text();
+    const efData = processConf(text);
+    setEfMap(efData);
+    localStorage.setItem('ef_map', JSON.stringify(efData));
+    setLoaded(p => ({ ...p, conf: true }));
+  } catch (err) {
+    setError('Erro ao carregar Conferência: ' + err.message);
+  }
+}
 
   async function handlePaletes(e) {
     const file = e.target.files[0];
@@ -1326,6 +1347,10 @@ function App() {
     try {
       const text = await file.text();
       setPalMap(processPaletes(text));
+      const palData = processPaletes(text);
+setPalMap(palData);
+localStorage.setItem('pal_map', JSON.stringify(palData));
+setLoaded(p => ({ ...p, paletes: true }));
       setLoaded(p => ({ ...p, paletes: true }));
     } catch (err) {
       setError('Erro ao carregar Paletes: ' + err.message);
