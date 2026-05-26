@@ -1179,6 +1179,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">POSIÇÃO</th>
                 <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
                 <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">PLACA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">RUA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">ETIQUETA</th>
                 <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
@@ -1203,6 +1204,10 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                     <td className="py-2 px-3 text-slate-700 align-middle ">
                       <div className="whitespace-normal break-words">{row.fornecedor}</div>
                       <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
+                    </td>
+                    <td className="py-2 px-3 text-slate-700 align-middle ">
+                      <div className="whitespace-normal break-words">{row.placaCarreta}</div>
+                      <div className="whitespace-normal break-words">{row.placaCavalo}</div>
                     </td>
                     <td className="py-2 px-3 text-center font-mono font-bold text-cyan-800 align-middle">{row.ruaModa}</td>
                     <td className="py-2 px-3 text-center align-middle">
