@@ -1055,6 +1055,7 @@ function DashboardDoca({ data, dbState, efMap }) {
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-slate-300 bg-slate-100">
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SLA</th>
                 <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
                 <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
                 <th className="text-left py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
@@ -1068,6 +1069,16 @@ function DashboardDoca({ data, dbState, efMap }) {
             <tbody>
               {conferencia.map((row, i) => (
                 <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
+                  <td className="py-2 px-3 text-center align-middle">
+                    <span className="inline-block w-3 h-3 rounded-full" style={{
+                      backgroundColor:
+                        row.minutosDoca === null ? '#94a3b8' :
+                        row.minutosDoca >= 240 ? '#ef4444' :
+                        row.minutosDoca >= 180 ? '#f97316' :
+                        row.minutosDoca >= 120 ? '#eab308' :
+                        '#22c55e'
+                    }} />
+                  </td>
                   <td className="py-2 px-3 font-mono text-blue-700 font-semibold text-sm">{row.carga}</td>
                   <td className="py-2 px-3 text-slate-700 max-w-xs truncate">{row.fornecedor}</td>
                   <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
