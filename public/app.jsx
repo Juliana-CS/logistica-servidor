@@ -1070,15 +1070,15 @@ function DashboardDoca({ data, dbState, efMap }) {
               {conferencia.map((row, i) => (
                 <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
                   <td className="py-2 px-3 text-center align-middle">
-                    <span className="inline-block w-3 h-3 rounded-full" style={{
-                      backgroundColor:
-                        row.minutosDoca === null ? '#94a3b8' :
-                        row.minutosDoca >= 240 ? '#ef4444' :
-                        row.minutosDoca >= 180 ? '#f97316' :
-                        row.minutosDoca >= 120 ? '#eab308' :
-                        '#22c55e'
-                    }} />
-                  </td>
+                  <span className="inline-block w-3 h-3 rounded-full" style={{
+                    backgroundColor:
+                      row.minutosDoca === null ? '#94a3b8' :
+                      row.minutosDoca >= 240 ? '#ef4444' :
+                      row.minutosDoca >= 180 ? '#f97316' :
+                      row.minutosDoca >= 120 ? '#eab308' :
+                      '#22c55e'
+                  }} />
+                </td>
                   <td className="py-2 px-3 font-mono text-blue-700 font-semibold text-sm">{row.carga}</td>
                   <td className="py-2 px-3 text-slate-700 max-w-xs truncate">{row.fornecedor}</td>
                   <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
@@ -1114,7 +1114,7 @@ function DashboardDoca({ data, dbState, efMap }) {
 }
 
 // ─── DASHBOARD: AGUARDANDO ACIONAMENTO ───────────────────────
-function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcionamento }) {
+function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcionamento, desfazerAcao}) {
   const now = new Date();
   const [docaInputs, setDocaInputs] = useState({});
   const [filtroEtiqueta, setFiltroEtiqueta] = useState('__all__');
@@ -1213,7 +1213,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                     <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
                       {formatDuration(row.minutosTotal)}
                     </td>
-                    <td className="py-2 px-3 text-center align-middle col-acao">
+                  <td className="py-2 px-3 text-center align-middle col-acao">
   {db.contato
     ? <div className="flex flex-col items-center gap-0.5">
         <Badge color="green">✓</Badge>
@@ -1221,6 +1221,12 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
           <span className="text-slate-400 text-xs font-mono">
             {new Date(db.contato_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
           </span>
+        )}
+        {db.contato_at && (new Date() - new Date(db.contato_at)) / 60000 <= 5 && (
+          <button
+            onClick={() => desfazerAcao(row.carga, 'contato')}
+            className="text-xs text-red-400 hover:text-red-600 transition-all"
+          >↩ desfazer</button>
         )}
       </div>
     : <button
@@ -1238,13 +1244,20 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
             {new Date(db.liberacao_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
           </span>
         )}
+        {db.liberacao_at && (new Date() - new Date(db.liberacao_at)) / 60000 <= 5 && (
+          <button
+            onClick={() => desfazerAcao(row.carga, 'liberacao')}
+            className="text-xs text-red-400 hover:text-red-600 transition-all"
+          >↩ desfazer</button>
+        )}
       </div>
     : <button
         onClick={() => handleAction(row.carga, 'liberacao')}
         className="bg-purple-100 hover:bg-purple-200 text-purple-700 rounded px-2 py-1 text-xs font-semibold transition-all"
       >LIBERAÇÃO</button>
   }
-</td><td className="py-2 px-3 text-center align-middle col-acao">
+</td>
+<td className="py-2 px-3 text-center align-middle col-acao">
                       {db.acionamento
                         ? <div className="flex items-center justify-center gap-1">
                           <Badge color="green">✓ DOCA {db.doca}</Badge>
@@ -1422,6 +1435,24 @@ setLoaded(p => ({ ...p, paletes: true }));
       await carregarDB();
     } catch { setError('Erro ao comunicar com o servidor.'); }
   }
+
+  async function desfazerAcao(carga, acao) {
+  try {
+    const res = await fetch('/api/desfazer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ carga, acao }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.erro || 'Erro ao desfazer ação');
+      return;
+    }
+    await carregarDB();
+  } catch {
+    setError('Erro ao comunicar com o servidor.');
+  }
+}
   // ─── EXPORTAÇÃO EXCEL ───────────────────────────────────────
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportDate, setExportDate] = useState('');
@@ -1595,7 +1626,7 @@ setLoaded(p => ({ ...p, paletes: true }));
               {activeTab === 'geral' && <DashboardGeral data={continuumData} />}
               {activeTab === 'eficiencia' && <DashboardEficiencia data={continuumData} efMap={efMap} />}
               {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} />}
-              {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} />}
+              {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} desfazerAcao={desfazerAcao} />}
             </div>
           </>
         )}

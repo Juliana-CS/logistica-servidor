@@ -95,6 +95,28 @@ app.post('/api/remover', (req, res) => {
   res.json({ ok: true, carga });
 });
 
+// POST /api/desfazer — desfaz contato ou liberação (apenas dentro de 5 minutos)
+app.post('/api/desfazer', (req, res) => {
+  const { carga, acao } = req.body;
+  if (!carga || !acao) return res.status(400).json({ erro: 'carga e acao são obrigatórios' });
+
+  const db = lerDB();
+  if (!db[carga]) return res.status(404).json({ erro: 'carga não encontrada' });
+
+  const atKey = `${acao}_at`;
+  const registradoEm = db[carga][atKey];
+  if (!registradoEm) return res.status(400).json({ erro: 'ação não registrada' });
+
+  const diff = (new Date() - new Date(registradoEm)) / 60000;
+  if (diff > 5) return res.status(403).json({ erro: 'Prazo de 5 minutos expirado' });
+
+  delete db[carga][acao];
+  delete db[carga][atKey];
+  salvarDB(db);
+
+  res.json({ ok: true, carga, acao });
+});
+
 // ─── INICIA SERVIDOR ─────────────────────────────────────────
 app.listen(PORT, '0.0.0.0', () => {
   // Garantir que o arquivo DB existe
