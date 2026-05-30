@@ -1679,7 +1679,7 @@ setLoaded(p => ({ ...p, paletes: true }));
         </div>
       )}
  <footer className="bg-blue-800 py-2 px-4 text-center text-xs text-white font-semibold tracking-widest flex flex-col">
-      © {new Date().getFullYear()} Desenvolvido por Juliana Cruz. Todos os direitos reservados.
+      © {new Date().getFullYear()} Desenvolvido por Juliana Cruz.
     </footer>
     </div>
   );
