@@ -1295,6 +1295,84 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
   );
 }
 
+function DashboardLiberadoPgto({ data, dbState }) {
+  const now = new Date();
+
+  const liberados = useMemo(() => {
+    return data
+      .filter(r => r.status === 'LIBERADO P/ PGTO')
+      .map(row => {
+        const minutosLiberado = row.fimConf ? diffMinutes(row.fimConf, now) : null;
+        const minutosTotal = row.chegada ? diffMinutes(row.chegada, now) : null;
+        const doca = dbState[row.carga]?.doca || '--';
+        return { ...row, minutosLiberado, minutosTotal, doca };
+      })
+      .sort((a, b) => (b.minutosLiberado || 0) - (a.minutosLiberado || 0));
+  }, [data, dbState]);
+
+  function getSLAColor(min) {
+    if (min === null) return '#94a3b8';
+    if (min >= 60) return '#ef4444';
+    if (min >= 30) return '#eab308';
+    return '#22c55e';
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
+        <div className="px-4 py-3 border-b border-slate-300 flex flex-col gap-1">
+          <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Liberados p/ Pagamento</h3>
+          <span className="text-xs text-slate-600">{liberados.length} cargas</span>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-xs">
+            <thead>
+              <tr className="border-b border-slate-300 bg-slate-100">
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SLA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">#</th>
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">DOCA</th>
+                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO LIB. PGTO</th>
+                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
+              </tr>
+            </thead>
+            <tbody>
+              {liberados.map((row, i) => (
+                <tr key={i} className="border-b border-slate-200 table-row-hover">
+                  <td className="py-2 px-3 text-center align-middle">
+                    <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: getSLAColor(row.minutosLiberado) }} />
+                  </td>
+                  <td className="py-2 px-3 text-center font-mono font-bold text-slate-500 align-middle">{i + 1}º</td>
+                  <td className="py-2 px-3 font-mono text-blue-700 font-semibold align-middle">{row.carga}</td>
+                  <td className="py-2 px-3 text-slate-700 align-middle">
+                    <div className="whitespace-normal break-words">{row.fornecedor}</div>
+                    <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
+                  </td>
+                  <td className="py-2 px-3 text-center font-mono font-bold text-yellow-700 align-middle">{row.doca}</td>
+                  <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${
+                    row.minutosLiberado === null ? 'text-slate-500' :
+                    row.minutosLiberado >= 60 ? 'text-red-700' :
+                    row.minutosLiberado >= 30 ? 'text-yellow-700' :
+                    'text-green-700'
+                  }`}>
+                    {formatDuration(row.minutosLiberado)}
+                  </td>
+                  <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
+                    {formatDuration(row.minutosTotal)}
+                  </td>
+                </tr>
+              ))}
+              {liberados.length === 0 && (
+                <tr><td colSpan={7} className="py-8 text-center text-slate-600">Nenhuma carga liberada p/ pagamento</td></tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  );
+}
 // ─── APP PRINCIPAL ────────────────────────────────────────────
 function App() {
   const [continuumData, setContinuumData] = useState([]);
@@ -1312,6 +1390,7 @@ function App() {
     { id: 'eficiencia', label: '⚡ Eficiência' },
     { id: 'doca', label: '🚛 Em Doca' },
     { id: 'aguardando', label: '⏳ Aguardando' },
+    { id: 'liberado', label: '💰 Lib. Pagamento' },
   ];
 
   // ─── POLLING DO SERVIDOR ─────────────────────────────────
@@ -1632,6 +1711,7 @@ setLoaded(p => ({ ...p, paletes: true }));
               {activeTab === 'eficiencia' && <DashboardEficiencia data={continuumData} efMap={efMap} />}
               {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} />}
               {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} desfazerAcao={desfazerAcao} />}
+              {activeTab === 'liberado' && <DashboardLiberadoPgto data={continuumData} dbState={dbState} />}
             </div>
           </>
         )}
