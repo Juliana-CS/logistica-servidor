@@ -358,7 +358,7 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
           <div className="pulse-dot"></div>
           <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Upload de Bases</h2>
         </div>
-        <button onClick={onExportar} className="bg-blue-100 hover:bg-black text-blue-800 px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2">
+        <button onClick={onExportar} className="bg-gray-100 hover:bg-slate-700 text-slate-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 border border-slate-300">
           📊 Exportar Excel
         </button>
       </div>
@@ -1599,7 +1599,7 @@ setLoaded(p => ({ ...p, paletes: true }));
         </div>
       </header>
 
-      <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6">
+      <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6 flex-1 w-full">
         <UploadSection onContinum={handleContinum} onConf={handleConf} onPaletes={handlePaletes} loaded={loaded} onExportar={() => setShowExportModal(true)} />
 
 
@@ -1678,7 +1678,7 @@ setLoaded(p => ({ ...p, paletes: true }));
           
         </div>
       )}
- <footer className="bg-blue-800 py-2 px-4 text-center text-xs text-white font-semibold tracking-widest">
+ <footer className="bg-blue-800 py-2 px-4 text-center text-xs text-white font-semibold tracking-widest flex flex-col">
       © {new Date().getFullYear()} Desenvolvido por Juliana Cruz. Todos os direitos reservados.
     </footer>
     </div>
