@@ -337,7 +337,8 @@ function Card({ title, value, sub, color = 'blue', icon }) {
 }
 
 // ─── UPLOAD DE BASES ─────────────────────────────────────────
-function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
+function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar, onAtualizar }) {
+  const [atualizando, setAtualizando] = useState(false);
   const fileInput = (label, accept, onChange, isLoaded) => (
     <label className={`flex flex-col items-center justify-center gap-1 border-2 border-dashed rounded-lg p-3 cursor-pointer transition-all
       ${isLoaded ? 'border-green-500 bg-green-50' : 'border-slate-300 hover:border-blue-600 bg-white/80'}`}
@@ -350,7 +351,11 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
       <input type="file" accept={accept} className="hidden" onChange={onChange} />
     </label>
   );
-
+async function handleAtualizar() {
+  setAtualizando(true);
+  await onAtualizar();
+  setTimeout(() => setAtualizando(false), 2000);
+}
   return (
     <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-sm">
       <div className="flex items-center justify-between mb-3">
@@ -358,9 +363,22 @@ function UploadSection({ onContinum, onConf, onPaletes, loaded, onExportar }) {
           <div className="pulse-dot"></div>
           <h2 className="text-sm font-bold text-slate-700 uppercase tracking-widest">Upload de Bases</h2>
         </div>
+        <div className="flex flex-col gap-2">
         <button onClick={onExportar} className="bg-gray-100 hover:bg-slate-700 text-slate-700 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 border border-slate-300">
           📊 Exportar Excel
         </button>
+
+          <button
+        onClick={handleAtualizar}
+        disabled={atualizando}
+        className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-2 border border-slate-300
+          ${atualizando
+            ? 'bg-green-600 text-white border-green-600'
+            : 'bg-gray-100 hover:bg-slate-700 hover:text-white text-gray-800'}`}
+      >
+        {atualizando ? '✓ Atualizado!' : '🔄 Atualizar'}
+      </button>
+      </div>
       </div>
       <div className="flex flex-wrap gap-3">
         {fileInput('Base Continum (.xls)', '.xls,.xlsx,.html', onContinum, loaded.continum)}
@@ -458,6 +476,18 @@ function DashboardGeral({ data }) {
     return { byDay, statusCount, total: filtered.length };
   }, [filtered]);
 
+  const backlog = useMemo(() => {
+  const hoje = new Date();
+  hoje.setHours(0, 0, 0, 0);
+  return data.filter(r => {
+    if (!r.agenda) return false;
+    const diaAgenda = new Date(r.agenda);
+    diaAgenda.setHours(0, 0, 0, 0);
+    if (diaAgenda >= hoje) return false;
+    return ['AGENDADO', 'CONFERENCIA'].includes(r.status);
+  }).length;
+}, [data]);
+
   const statsGlobal = useMemo(() => {
     const statusCount = {};
     data.forEach(row => {
@@ -519,14 +549,17 @@ function DashboardGeral({ data }) {
           </h3>
 
           <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
-            <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
-            <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" />
-            <Card title="Em Conferência" value={statsGlobal.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" sub='Todas as datas' />
-            <Card title="Agendados" value={statsGlobal.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" sub='Todas as datas' />
-            <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="orange" />
-            <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="red" />
-          </div>
-        </div>
+            <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} /> 
+            <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" /> 
+            <Card title="Em Conferência" value={statsGlobal.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" sub='Todas as datas' /> 
+            <Card title="Agendados" value={statsGlobal.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" sub='Todas as datas' /> 
+            <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="yellow" /> 
+            <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="orange" />
+             </div> 
+             <div className="grid grid-cols-2  text-center gap-3 w-full flex-1 content-center">
+              </div> 
+                <Card title="Backlog" value={backlog} icon="⚠" color="red" /> 
+              </div>
 
         {/* Tabela Status × Data */}
         <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
@@ -1679,7 +1712,7 @@ setLoaded(p => ({ ...p, paletes: true }));
       </header>
 
       <div className="max-w-screen-2xl mx-auto px-4 py-6 space-y-6 flex-1 w-full">
-        <UploadSection onContinum={handleContinum} onConf={handleConf} onPaletes={handlePaletes} loaded={loaded} onExportar={() => setShowExportModal(true)} />
+        <UploadSection onContinum={handleContinum} onConf={handleConf} onPaletes={handlePaletes} loaded={loaded} onExportar={() => setShowExportModal(true)} onAtualizar={carregarDB}/>
 
 
 

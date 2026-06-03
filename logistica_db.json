@@ -150,5 +150,19 @@
     "doca": "12",
     "fornecedor": "EMPRESA BRASILEIRA DE BEBIDAS E ALIM. S/A",
     "motorista": "WANDERSON LIMA MONTEIRO DA SILVA"
+  },
+  "28476096": {
+    "contato": true,
+    "contato_at": "2026-06-02T19:38:05.696Z"
+  },
+  "28477583": {
+    "liberacao": true,
+    "liberacao_at": "2026-06-02T19:38:06.734Z"
+  },
+  "28479938": {
+    "contato": true,
+    "contato_at": "2026-06-02T19:38:07.954Z",
+    "liberacao": true,
+    "liberacao_at": "2026-06-02T19:38:09.086Z"
   }
 }
