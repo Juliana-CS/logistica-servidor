@@ -556,7 +556,7 @@ function DashboardGeral({ data }) {
             <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="yellow" /> 
             <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="orange" />
              </div> 
-             <div className="grid grid-cols-2  text-center gap-3 w-full flex-1 content-center">
+             <div className="grid grid-cols-2  text-centergap-3 w-full flex-1 content-center">
               </div> 
                 <Card title="Backlog" value={backlog} icon="⚠" color="red" /> 
               </div>
@@ -1019,7 +1019,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
 }
 
 // ─── DASHBOARD: CARGAS EM DOCA ────────────────────────────────
-function DashboardDoca({ data, dbState, efMap }) {
+function DashboardDoca({ data, dbState, efMap, desfazerDoca}) {
   const now = new Date();
   const conferencia = useMemo(() => {
     const vistos = new Set();
@@ -1117,7 +1117,17 @@ function DashboardDoca({ data, dbState, efMap }) {
                   <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
                   <td className="py-2 px-3 text-center font-mono text-yellow-700 font-bold">{row.doca}</td>
                   <td className="py-2 px-3 text-center font-mono text-slate-600">
-                    {row.acionado ? row.acionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '--'}
+                    {row.acionado ? (
+                      <div className="flex flex-col items-center gap-0.5">
+                        <span>{row.acionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
+                        {(new Date() - row.acionado) / 60000 <= 5 && (
+                          <button
+                            onClick={() => desfazerDoca(row.carga)}
+                            className="text-xs text-red-400 hover:text-red-600 transition-all"
+                          >↩ desfazer</button>
+                        )}
+                      </div>
+                    ) : '--'}
                   </td>
                   <td className={`py-2 px-3 text-right font-mono font-bold text-lg ${getDocaSLAColor(row.minutosDoca)}`}>
                     {formatDuration(row.minutosDoca)}
@@ -1570,6 +1580,23 @@ setLoaded(p => ({ ...p, paletes: true }));
     setError('Erro ao comunicar com o servidor.');
   }
 }
+async function desfazerDoca(carga) {
+  try {
+    const res = await fetch('/api/remover', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ carga }),
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      alert(data.erro || 'Erro ao desfazer doca');
+      return;
+    }
+    await carregarDB();
+  } catch {
+    setError('Erro ao comunicar com o servidor.');
+  }
+}
   // ─── EXPORTAÇÃO EXCEL ───────────────────────────────────────
   const [showExportModal, setShowExportModal] = useState(false);
   const [exportDate, setExportDate] = useState('');
@@ -1742,7 +1769,7 @@ setLoaded(p => ({ ...p, paletes: true }));
             <div className="pb-8" id="painel-ativo">
               {activeTab === 'geral' && <DashboardGeral data={continuumData} />}
               {activeTab === 'eficiencia' && <DashboardEficiencia data={continuumData} efMap={efMap} />}
-              {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} />}
+              {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap}  desfazerDoca={desfazerDoca}/>}
               {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} desfazerAcao={desfazerAcao} />}
               {activeTab === 'liberado' && <DashboardLiberadoPgto data={continuumData} dbState={dbState} />}
             </div>

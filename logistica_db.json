@@ -139,7 +139,12 @@
     "fornecedor": "NEWAGE IND E COM DE BEB E ALIM LTDA",
     "motorista": "RICARDO  SANTANA RODRIGUES"
   },
-  "28318884": {},
+  "28318884": {
+    "contato": true,
+    "contato_at": "2026-06-03T12:56:07.866Z",
+    "fornecedor": "LACTICINIOS TIROL LTDA",
+    "motorista": "FRANCISCO BENITES"
+  },
   "28367390": {
     "contato": true,
     "contato_at": "2026-05-20T18:31:30.447Z",
