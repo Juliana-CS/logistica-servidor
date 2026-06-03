@@ -1222,6 +1222,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
               <tr className="border-b border-slate-300 bg-slate-100">
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">POSIÇÃO</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SENHA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">CARGA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
@@ -1243,7 +1244,10 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                      <td className={`py-2 px-3 text-center font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
                       {formatDuration(row.minutosTotal)}
                     </td>
-                    <td className="py-2 px-3 text-center font-mono font-semibold align-middle text-sm">
+                     <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
+                      <div className="whitespace-normal  break-words">{row.senha}</div>
+                       </td>
+                    <td className="py-2 px-3 text-center font-mono  align-middle text-sm">
                     {row.carga ? (
                       <span className="text-blue-700">{row.carga}</span>
                     ) : (
