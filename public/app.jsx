@@ -447,74 +447,6 @@ async function handleAtualizar() {
     </div>
   );
 }
-function CrossTabTable({ data, allDays }) {
-  const STATUS_ORDER = [
-    'FINALIZADO', 'CONFERENCIA', 'AGENDADO',
-    'NÃO COMPARECEU', 'FALTA COMPARECER',
-    'RECUSADO', 'DIVERGENTE', 'LIBERADO P/ PGTO', 'PARA AGENDAR',
-  ];
-
-  const crossTab = useMemo(() => {
-    const foundStatuses = new Set();
-    const byStatusDay = {};
-    data.forEach(row => {
-      const st = row.status || 'DESCONHECIDO';
-      const day = row.diaKey || 'Sem data';
-      foundStatuses.add(st);
-      if (!byStatusDay[st]) byStatusDay[st] = {};
-      byStatusDay[st][day] = (byStatusDay[st][day] || 0) + 1;
-    });
-    const ordered = STATUS_ORDER.filter(s => foundStatuses.has(s));
-    foundStatuses.forEach(s => { if (!STATUS_ORDER.includes(s)) ordered.push(s); });
-    return { statuses: ordered, byStatusDay };
-  }, [data]);
-
-  return (
-    <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
-      <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">Contagem por Status × Data</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full text-xs">
-          <thead>
-            <tr className="border-b border-slate-300">
-              <th className="text-left py-2 px-2 text-slate-700 font-semibold whitespace-nowrap">Status</th>
-              {allDays.map(d => (
-                <th key={d} className="text-center py-2 px-2 text-slate-700 font-mono font-semibold whitespace-nowrap">{d}</th>
-              ))}
-              <th className="text-center py-2 px-2 text-slate-700 font-semibold">Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            {crossTab.statuses.map(st => {
-              const rowTotal = allDays.reduce((acc, d) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
-              return (
-                <tr key={st} className="border-b border-slate-200 table-row-hover">
-                  <td className="py-2 px-2 whitespace-nowrap"><StatusBadge status={st} /></td>
-                  {allDays.map(d => {
-                    const n = crossTab.byStatusDay[st]?.[d] || 0;
-                    return (
-                      <td key={d} className={`py-2 px-2 text-center font-mono font-bold ${n > 0 ? 'text-slate-800' : 'text-slate-700'}`}>
-                        {n > 0 ? n : '–'}
-                      </td>
-                    );
-                  })}
-                  <td className="py-2 px-2 text-center font-mono font-bold text-blue-700">{rowTotal}</td>
-                </tr>
-              );
-            })}
-            <tr className="border-t border-slate-300 bg-slate-50">
-              <td className="py-2 px-2 text-xs font-bold text-slate-600">TOTAL</td>
-              {allDays.map(d => {
-                const colTotal = crossTab.statuses.reduce((acc, st) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
-                return <td key={d} className="py-2 px-2 text-center font-mono font-bold text-blue-700">{colTotal}</td>;
-              })}
-              <td className="py-2 px-2 text-center font-mono font-bold text-blue-700">{data.length}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
 
 // ─── DASHBOARD: VISÃO GERAL ───────────────────────────────────
 function DashboardGeral({ data }) {
@@ -602,6 +534,76 @@ function DashboardGeral({ data }) {
               className={`px-3 py-1 rounded text-xs font-mono font-semibold transition-all ${selectedDay === d ? 'bg-blue-700 text-white' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'}`}
             >{d}</button>
           ))}
+        </div>
+      </div>
+
+
+      {/* Cards + Tabela Status×Data na mesma linha */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+
+        {/* Cards 3x2 */}
+        <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm flex flex-col h-full">
+
+          <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">
+            VISÃO GERAL
+          </h3>
+
+          <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
+            <Card title="Total Programado" value={stats.total} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} /> 
+            <Card title="Finalizados" value={stats.statusCount['FINALIZADO'] || 0} icon="✓" color="green" /> 
+            <Card title="Em Conferência" value={statsGlobal.statusCount['CONFERENCIA'] || 0} icon="⚙" color="blue" sub='Todas as datas' /> 
+            <Card title="Agendados" value={statsGlobal.statusCount['AGENDADO'] || 0} icon="📅" color="yellow" sub='Todas as datas' /> 
+            <Card title="Falta Comparecer" value={stats.statusCount['FALTA COMPARECER'] || 0} icon="⏰" color="yellow" /> 
+            <Card title="Não Compareceu" value={stats.statusCount['NÃO COMPARECEU'] || 0} icon="✗" color="orange" />
+             </div> 
+             <div className="grid grid-cols-2  text-centergap-3 w-full flex-1 content-center">
+              </div> 
+                <Card title="Backlog" value={backlog} icon="⚠" color="red" /> 
+              </div>
+
+        {/* Tabela Status × Data */}
+        <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
+          <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">Contagem por Status × Data</h3>
+          <div className="overflow-x-auto">
+            <table className="w-full text-xs">
+              <thead>
+                <tr className="border-b border-slate-300">
+                  <th className="text-left py-2 px-2 text-slate-700 font-semibold whitespace-nowrap">Status</th>
+                  {allDays.map(d => (
+                    <th key={d} className="text-center py-2 px-2 text-slate-700 font-mono font-semibold whitespace-nowrap">{d}</th>
+                  ))}
+                  <th className="text-center py-2 px-2 text-slate-700 font-semibold">Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {crossTab.statuses.map(st => {
+                  const rowTotal = allDays.reduce((acc, d) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
+                  return (
+                    <tr key={st} className="border-b border-slate-200 table-row-hover">
+                      <td className="py-2 px-2 whitespace-nowrap"><StatusBadge status={st} /></td>
+                      {allDays.map(d => {
+                        const n = crossTab.byStatusDay[st]?.[d] || 0;
+                        return (
+                          <td key={d} className={`py-2 px-2 text-center font-mono font-bold ${n > 0 ? 'text-slate-800' : 'text-slate-700'}`}>
+                            {n > 0 ? n : '–'}
+                          </td>
+                        );
+                      })}
+                      <td className="py-2 px-2 text-center font-mono font-bold text-blue-700">{rowTotal}</td>
+                    </tr>
+                  );
+                })}
+                <tr className="border-t border-slate-300 bg-slate-50">
+                  <td className="py-2 px-2 text-xs font-bold text-slate-600">TOTAL</td>
+                  {allDays.map(d => {
+                    const colTotal = crossTab.statuses.reduce((acc, st) => acc + (crossTab.byStatusDay[st]?.[d] || 0), 0);
+                    return <td key={d} className="py-2 px-2 text-center font-mono font-bold text-blue-700">{colTotal}</td>;
+                  })}
+                  <td className="py-2 px-2 text-center font-mono font-bold text-blue-700">{data.length}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
@@ -752,22 +754,6 @@ function DashboardEficiencia({ data, efMap }) {
           >{d}</button>
         ))}
       </div>
-
-      {/* Cards + Tabela Status×Data */}
-<div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-  <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm flex flex-col h-full">
-    <h3 className="text-sm font-bold text-slate-600 text-center uppercase tracking-widest mb-3">VISÃO GERAL</h3>
-    <div className="grid grid-cols-2 gap-3 w-full flex-1 content-center">
-      <Card title="Total Programado" value={filtered.length} icon="📦" color="blue" sub={selectedDay !== '__all__' ? selectedDay : 'todas as datas'} />
-      <Card title="Finalizados" value={filtered.filter(r => r.status === 'FINALIZADO').length} icon="✓" color="green" />
-      <Card title="Em Conferência" value={data.filter(r => r.status === 'CONFERENCIA').length} icon="⚙" color="blue" sub='Todas as datas' />
-      <Card title="Agendados" value={data.filter(r => r.status === 'AGENDADO').length} icon="📅" color="yellow" sub='Todas as datas' />
-      <Card title="Falta Comparecer" value={filtered.filter(r => r.status === 'FALTA COMPARECER').length} icon="⏰" color="orange" />
-      <Card title="Não Compareceu" value={filtered.filter(r => r.status === 'NÃO COMPARECEU').length} icon="✗" color="red" />
-    </div>
-  </div>
-  <CrossTabTable data={data} allDays={allDays} />
-</div>
 
       {/* Cards por turno + Gráfico na mesma linha */}
       {/* Cards por turno — 3 na mesma linha */}
@@ -1103,12 +1089,12 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca}) {
             <thead>
               <tr className="border-b border-slate-300 bg-slate-100">
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">SLA</th>
-                <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
-                <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
-                <th className="text-left py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO DOCA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">DOCA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONADO</th>
-                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO DOCA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONADO</th>                
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">CONFERÊNCIA</th>
                 
               </tr>
@@ -1126,9 +1112,12 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca}) {
                       '#22c55e'
                   }} />
                 </td>
-                  <td className="py-2 px-3 font-mono text-blue-700 font-semibold text-sm">{row.carga}</td>
-                  <td className="py-2 px-3 text-slate-700 max-w-xs truncate">{row.fornecedor}</td>
-                  <td className="py-2 px-3 text-slate-600">{row.motorista}</td>
+                <td className={`py-2 px-3 text-center font-mono font-bold text-lg ${getDocaSLAColor(row.minutosDoca)}`}>
+                    {formatDuration(row.minutosDoca)}
+                  </td>
+                  <td className="py-2 px-3 text-center font-mono text-blue-700 font-semibold text-sm">{row.carga}</td>
+                  <td className="py-2 px-3 text-center text-slate-500 font-semibold  max-w-xs truncate">{row.fornecedor}</td>
+                  <td className="py-2 px-3 text-center text-slate-600">{row.motorista}</td>
                   <td className="py-2 px-3 text-center font-mono text-yellow-700 font-bold">{row.doca}</td>
                   <td className="py-2 px-3 text-center font-mono text-slate-600">
                     {row.acionado ? (
@@ -1143,9 +1132,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca}) {
                       </div>
                     ) : '--'}
                   </td>
-                  <td className={`py-2 px-3 text-right font-mono font-bold text-lg ${getDocaSLAColor(row.minutosDoca)}`}>
-                    {formatDuration(row.minutosDoca)}
-                  </td>
+                  
                   <td className="py-2 px-3 text-center">
                     {(() => {
                       const entry = efMap[row.carga];
@@ -1234,12 +1221,13 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
             <thead>
               <tr className="border-b border-slate-300 bg-slate-100">
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">POSIÇÃO</th>
-                <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
-                <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
-                <th className="text-left py-2 px-3 text-slate-700 font-semibold">PLACA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
+                <th className="text-center py-2 px-3 text-slate-700 font-semibold">PLACA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">RUA</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">ETIQUETA</th>
-                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold col-acao">CONTATO</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold col-acao">LIBERAÇÃO</th>
                 <th className="text-center py-2 px-3 text-slate-700 font-semibold col-acao">ACIONAMENTO</th>
@@ -1251,18 +1239,26 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 return (
                   <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
                     <td className="py-2 px-3 text-center font-mono font-bold text-slate-500 align-middle">{i + 1}°</td>
-                    <td className="py-2 px-3 font-mono font-semibold align-middle text-sm">
-  {row.carga ? (
-    <span className="text-blue-700">{row.carga}</span>
-  ) : (
-    <span className="text-orange-600 text-xs">EM DIVERGÊNCIA</span>
-  )}
-</td>
-                    <td className="py-2 px-3 text-slate-700 align-middle ">
-                      <div className="whitespace-normal break-words">{row.fornecedor}</div>
-                      <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
+
+                     <td className={`py-2 px-3 text-center font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
+                      {formatDuration(row.minutosTotal)}
                     </td>
-                    <td className="py-2 px-3 text-slate-700 align-middle ">
+                    <td className="py-2 px-3 text-center font-mono font-semibold align-middle text-sm">
+                    {row.carga ? (
+                      <span className="text-blue-700">{row.carga}</span>
+                    ) : (
+                      <span className="text-orange-600 text-xs">EM DIVERGÊNCIA</span>
+                    )}
+                  </td>
+                   
+                    <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
+                      <div className="whitespace-normal break-words">{row.fornecedor}</div>
+                       </td>
+                       <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
+                      <div className="text-slate-800 font-semibold whitespace-normal break-words">{row.motorista}</div>
+                   
+                    </td>
+                    <td className="py-2 px-3 text-center text-slate-700 align-middle ">
                       <div className="whitespace-normal break-words">{row.placaCarreta}</div>
                       <div className="whitespace-normal break-words">{row.placaCavalo}</div>
                     </td>
@@ -1272,9 +1268,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
     {row.temEtiqueta ? 'SIM' : 'NÃO'}
   </span>
 </td>
-                    <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
-                      {formatDuration(row.minutosTotal)}
-                    </td>
+                  
                   <td className="py-2 px-3 text-center align-middle col-acao">
   {db.contato
     ? <div className="flex flex-col items-center gap-0.5">
@@ -1443,7 +1437,7 @@ function App() {
   const [error, setError] = useState(null);
 
   const tabs = [
-    { id: 'geral', label: '📊 Agenda' },
+    { id: 'geral', label: '📊 Visão Geral' },
     { id: 'eficiencia', label: '⚡ Eficiência' },
     { id: 'doca', label: '🚛 Em Doca' },
     { id: 'aguardando', label: '⏳ Aguardando' },
