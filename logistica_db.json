@@ -143,7 +143,10 @@
     "contato": true,
     "contato_at": "2026-06-03T12:56:07.866Z",
     "fornecedor": "LACTICINIOS TIROL LTDA",
-    "motorista": "FRANCISCO BENITES"
+    "motorista": "FRANCISCO BENITES",
+    "acionamento": true,
+    "acionamento_at": "2026-06-03T13:02:09.004Z",
+    "doca": "12"
   },
   "28367390": {
     "contato": true,
