@@ -1088,14 +1088,14 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca}) {
           <table className="w-full text-xs">
             <thead>
               <tr className="border-b border-slate-300 bg-slate-100">
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SLA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO DOCA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CARGA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">DOCA</th>
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">ACIONADO</th>                
-                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CONFERÊNCIA</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">SLA</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">TEMPO DOCA</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">CARGA</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">FORNECEDOR</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">PLACAS</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">DOCA</th>
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">ACIONADO</th>                
+                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">CONFERÊNCIA</th>
                 
               </tr>
             </thead>
@@ -1115,9 +1115,14 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca}) {
                 <td className={`py-2 px-3 text-center font-mono font-bold text-lg ${getDocaSLAColor(row.minutosDoca)}`}>
                     {formatDuration(row.minutosDoca)}
                   </td>
-                  <td className="py-2 px-3 text-center font-mono text-blue-700 font-semibold text-sm">{row.carga}</td>
-                  <td className="py-2 px-3 text-center text-slate-500 font-semibold  max-w-xs truncate">{row.fornecedor}</td>
-                  <td className="py-2 px-3 text-center text-slate-600">{row.motorista}</td>
+                  <td className="py-2 px-3 text-center text-lg font-mono text-blue-700 font-semibold">{row.carga}</td>
+                  <td className="py-2 px-3 text-center text-slate-800 text-sm font-semibold  max-w-xs truncate">{row.fornecedor}</td>
+                  
+                      <td className="py-2 px-3 text-center text-sm text-slate-1000 align-middle ">
+                      <div className="whitespace-normal break-words">{row.placaCarreta}</div>
+                      <div className="whitespace-normal break-words">{row.placaCavalo}</div>
+                    </td>
+
                   <td className="py-2 px-3 text-center font-mono text-yellow-700 font-bold">{row.doca}</td>
                   <td className="py-2 px-3 text-center font-mono text-slate-600">
                     {row.acionado ? (
@@ -1260,7 +1265,6 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                        </td>
                        <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
                       <div className="text-slate-800 font-semibold whitespace-normal break-words">{row.motorista}</div>
-                   
                     </td>
                     <td className="py-2 px-3 text-center text-slate-700 align-middle ">
                       <div className="whitespace-normal break-words">{row.placaCarreta}</div>
