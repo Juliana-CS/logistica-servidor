@@ -326,7 +326,7 @@ function Card({ title, value, sub, color = 'blue', icon }) {
         <div className={`bg-white border ${border[color]} rounded-lg px-5 py-2 card-glow shadow-sm`}>
             <div className="flex items-start justify-between">
                 <div>
-                    <p className="text-sm text-slate-600 uppercase tracking-widest font-bold">{title}</p>
+                    <p className="text-base text-slate-600 uppercase tracking-widest font-bold">{title}</p>
                     <p className={`text-3xl font-bold mt-1 font-mono ${text[color]}`}>{value}</p>
                     {sub && <p className="text-xs text-slate-600 mt-0">{sub}</p>}
                 </div>
@@ -545,6 +545,7 @@ function DashboardGeral({ data }) {
             <div className="grid grid-cols-4 gap-4">
                 <GraficoPizzaTurnos filtered={filtered} />
                 <Top3Fornecedores filtered={filtered} />
+                
             </div>
 
         </div>
@@ -822,9 +823,9 @@ function DashboardEficiencia({ data, efMap }) {
 // ─── GRÁFICO FINALIZADOS POR TURNO ──────────────────────────
 function GraficoFinalizadosTurno({ stats }) {
     const turnos = [
-        { nome: '1º Turno', key: '1º Turno', cor: '#3b82f6', corBg: 'rgba(59,130,246,0.15)' },
-        { nome: '2º Turno', key: '2º Turno', cor: '#eab308', corBg: 'rgba(234,179,8,0.15)' },
-        { nome: '3º Turno', key: '3º Turno', cor: '#f97316', corBg: 'rgba(249,115,22,0.15)' },
+        { nome: '1ºT', key: '1º Turno', cor: '#3b82f6', corBg: 'rgba(59,130,246,0.15)' },
+        { nome: '2ºT', key: '2º Turno', cor: '#eab308', corBg: 'rgba(234,179,8,0.15)' },
+        { nome: '3ºT', key: '3º Turno', cor: '#f97316', corBg: 'rgba(249,115,22,0.15)' },
     ];
 
     const valores = turnos.map(t => stats[t.key]?.fin || 0);
@@ -867,7 +868,7 @@ function GraficoFinalizadosTurno({ stats }) {
             {/* Linha de referência e legenda */}
             <div className="mt-4 pt-3 border-t border-slate-200 flex justify-center gap-6">
                 {turnos.map((t, i) => (
-                    <div key={t.key} className="flex items-center gap-2 text-xs text-slate-600">
+                    <div key={t.key} className="flex items-center gap-2 text-base text-slate-600">
                         <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: t.cor }}></span>
                         {t.nome}: <span className="font-mono font-bold text-slate-800">{valores[i]}</span>
                         <span className="text-slate-600">
@@ -1019,9 +1020,9 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
                                 <tr className="border-t border-slate-300 bg-slate-100">
                                     <td colSpan={3} className="py-2 px-3 text-sm font-bold">
                                         <span className="text-slate-600">TOTAL: </span>
-                                        <span className="text-lg font-semibold text-blue-700">{turno.totalCargas}</span>
+                                        <span className="font-mono text-blue-700">{turno.totalCargas}</span>
                                         <span className="text-slate-600 mx-1">|</span>
-                                        <span className={`text-font-mono font-bold ${getEficienciaColor(turno.taxaGeral)}`}>
+                                        <span className={`font-mono font-bold ${getEficienciaColor(turno.taxaGeral)}`}>
                                             {turno.taxaGeral !== null ? turno.taxaGeral.toFixed(1) : '--'} cargas/h
                                         </span>
                                         <span className={`ml-1 font-bold ${getEficienciaColor(turno.taxaGeral)}`}>
@@ -1059,6 +1060,8 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca }) {
                     carga: cargaInt,
                     fornecedor: db.fornecedor || rowContinum?.fornecedor || '--',
                     motorista: db.motorista || rowContinum?.motorista || '--',
+                    placaCarreta: rowContinum?.placaCarreta || '--',
+                    placaCavalo:  rowContinum?.placaCavalo  || '--',
                     doca: db.doca,
                     acionado: ref,
                     minutosDoca: minutos,
@@ -1097,9 +1100,8 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca }) {
             </div>
 
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-                <div className="px-4 py-3 border-b border-slate-200 flex flex-col items-start gap-2">
-                    <h3 className="text-xs2 font-bold text-slate-600 uppercase tracking-widest">Cargas em Doca</h3>
-                    <span className="text-xs1 text-slate-600">{conferencia.length} cargas em conferência</span>
+                <div className="px-4 py-3 text-center border-b border-slate-200 flex flex-col items-start gap-2">
+                    <h3 className="text-lg text-center font-bold text-slate-800 uppercase tracking-widest">Cargas em Doca - {conferencia.length}</h3>
                 </div>
 
 
@@ -1108,43 +1110,34 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca }) {
                     <table className="w-full text-xs">
                         <thead>
                             <tr className="border-b border-slate-300 bg-slate-100">
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">SLA</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">TEMPO DOCA</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">CARGA</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">FORNECEDOR</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">PLACAS</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">DOCA</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">ACIONADO</th>
-                                <th className="text-center py-2 px-3 text-sm text-slate-700 font-semibold">CONFERÊNCIA</th>
+
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">TEMPO DOCA</th>
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">CARGA</th>
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">FORNECEDOR</th>
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">PLACAS</th>
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">DOCA</th>
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">ACIONADO</th>
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">CONFERÊNCIA</th>
 
                             </tr>
                         </thead>
                         <tbody>
                             {conferencia.map((row, i) => (
                                 <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                                    <td className="py-2 px-3 text-center align-middle">
-                                        <span className="inline-block w-3 h-3 rounded-full" style={{
-                                            backgroundColor:
-                                                row.minutosDoca === null ? '#94a3b8' :
-                                                    row.minutosDoca >= 240 ? '#ef4444' :
-                                                        row.minutosDoca >= 180 ? '#f97316' :
-                                                            row.minutosDoca >= 120 ? '#eab308' :
-                                                                '#22c55e'
-                                        }} />
-                                    </td>
-                                    <td className={`py-2 px-3 text-center font-mono font-bold text-lg ${getDocaSLAColor(row.minutosDoca)}`}>
+                                   
+                                    <td className={`py-2 px-3 text-center font-mono font-bold text-xl ${getDocaSLAColor(row.minutosDoca)}`}>
                                         {formatDuration(row.minutosDoca)}
                                     </td>
-                                    <td className="py-2 px-3 text-center text-lg font-mono text-blue-700 font-semibold">{row.carga}</td>
-                                    <td className="py-2 px-3 text-center text-slate-800 text-sm font-semibold  max-w-xs truncate">{row.fornecedor}</td>
+                                    <td className={`py-2 px-3 text-center text-xl font-mono font-semibold ${getDocaSLAColor(row.minutosDoca)}`}>{row.carga}</td>
+                                    <td className="py-2 px-3 text-center text-slate-700 text-xl font-semibold  max-w-xs truncate">{row.fornecedor}</td>
 
-                                    <td className="py-2 px-3 text-center text-sm text-slate-1000 align-middle ">
+                                    <td className="py-2 px-3 text-center text-sm text-slate-800 font-semibold align-middle ">
                                         <div className="whitespace-normal break-words">{row.placaCarreta}</div>
                                         <div className="whitespace-normal break-words">{row.placaCavalo}</div>
                                     </td>
 
-                                    <td className="py-2 px-3 text-center font-mono text-yellow-700 font-bold">{row.doca}</td>
-                                    <td className="py-2 px-3 text-center font-mono text-slate-600">
+                                    <td className="py-2 px-3 text-center text-xl font-mono text-blue-600 font-bold">{row.doca}</td>
+                                    <td className="py-2 px-3 text-center text-base font-mono text-slate-600">
                                         {row.acionado ? (
                                             <div className="flex flex-col items-center gap-0.5">
                                                 <span>{row.acionado.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span>
@@ -1158,21 +1151,18 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca }) {
                                         ) : '--'}
                                     </td>
 
-                                    <td className="py-2 px-3 text-center">
+                                    <td className="py-2 px-3 text-lg text-center font-semibold">
                                         {(() => {
                                             const entry = efMap[row.carga];
-                                            if (!entry || !entry.temInicio)
-                                                return <span className="status-badge bg-slate-100 text-slate-500 border border-slate-300">Não iniciada</span>;
-                                            if (entry.temInicio && !entry.temFim)
-                                                return <span className="status-badge bg-yellow-900/50 text-yellow-700 border border-yellow-700/50">⚙ Em conferência</span>;
-                                            return <span className="status-badge bg-green-900/50 text-green-700 border border-green-700/50">✓ Finalizada</span>;
+                                            if (!entry || !entry.temInicio) return <span className="text-slate-500">Não iniciada</span>;
+                                            if (entry.temInicio && !entry.temFim) return <span className="text-yellow-700">⚙ Em conferência</span>;
+                                            return <span className="text-green-700">✓ Finalizada</span>;
                                         })()}
                                     </td>
-
                                 </tr>
                             ))}
                             {conferencia.length === 0 && (
-                                <tr><td colSpan={7} className="py-8 text-center text-slate-600">Nenhuma carga em conferência</td></tr>
+                                <tr><td colSpan={6} className="py-8 text-center text-slate-600">Nenhuma carga em conferência</td></tr>
                             )}
                         </tbody>
                     </table>
@@ -1238,17 +1228,16 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
             </div>
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
                 <div className="px-4 py-3 border-b border-slate-300">
-                    <h3 className="text-xs1 font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento </h3>
-                    <span className="text-xs1 text-slate-600"> {aguardando.length} cargas </span>
+                    <h3 className="text-lg font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento - {aguardando.length}</h3>                    
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-xs">
+                    <table className="w-full text-lg">
                         <thead>
                             <tr className="border-b border-slate-300 bg-slate-100">
                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">POSIÇÃO</th>
                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
-                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SENHA</th>
                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SENHA</th>
                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">PLACA</th>
@@ -1264,34 +1253,36 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                                 const db = dbState[row.carga] || {};
                                 return (
                                     <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                                        <td className="py-2 px-3 text-center font-mono font-bold text-slate-500 align-middle">{i + 1}°</td>
+                                        <td className="py-2 px-3 text-center text-base font-mono font-bold text-slate-500 align-middle">{i + 1}°</td>
 
                                         <td className={`py-2 px-3 text-center font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
                                             {formatDuration(row.minutosTotal)}
                                         </td>
-                                        <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
-                                            <div className="whitespace-normal  break-words">{row.senha}</div>
-                                        </td>
-                                        <td className="py-2 px-3 text-center font-mono  align-middle text-sm">
+                                      
+                                        <td className="text-base py-2 px-3 text-center font-mono font-semibold align-middle ">
                                             {row.carga ? (
-                                                <span className="text-blue-700">{row.carga}</span>
+                                                <span className={`text-blue-700 ${getAguardandoSLAColor(row.minutosTotal)}`}>{row.carga}</span>
                                             ) : (
                                                 <span className="text-orange-600 text-xs">EM DIVERGÊNCIA</span>
                                             )}
                                         </td>
 
-                                        <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
-                                            <div className="whitespace-normal break-words">{row.fornecedor}</div>
+                                          <td className="text-base py-2 px-3 text-center text-slate-1000 font-semibold align-middle ">
+                                            <div className="whitespace-normal  break-words">{row.senha}</div>
                                         </td>
-                                        <td className="py-2 px-3 text-center text-slate-1000 align-middle ">
-                                            <div className="text-slate-800 font-semibold whitespace-normal break-words">{row.motorista}</div>
+
+                                        <td className="text-base py-2 px-3 text-center text-slate-1000 font-semibold align-middle ">
+                                            <div className="whitespace-normal break-words">{row.fornecedor?.trim().split(/\s+/).slice(0, 2).join(' ')}</div>
                                         </td>
-                                        <td className="py-2 px-3 text-center text-slate-700 align-middle ">
+                                        <td className="text-base py-2 px-3 text-center text-slate-1000 align-middle ">
+                                            <div className="text-slate-800 font-semibold whitespace-normal break-words">{row.motorista?.trim().split(/\s+/).slice(0, 2).join(' ')}</div>
+                                        </td>
+                                        <td className="text-base py-2 px-3 text-center text-slate-700 font-semibold align-middle ">
                                             <div className="whitespace-normal break-words">{row.placaCarreta}</div>
                                             <div className="whitespace-normal break-words">{row.placaCavalo}</div>
                                         </td>
-                                        <td className="py-2 px-3 text-center font-mono font-bold text-cyan-800 align-middle">{row.ruaModa}</td>
-                                        <td className="py-2 px-3 text-center align-middle">
+                                        <td className="text-base py-2 px-3 text-center font-mono font-bold text-cyan-9000 align-middle">{row.ruaModa}</td>
+                                        <td className="text-base py-2 px-3 text-center align-middle">
                                             <span className={row.temEtiqueta ? 'text-green-600 font-bold' : 'text-red-600 font-bold'}>
                                                 {row.temEtiqueta ? 'SIM' : 'NÃO'}
                                             </span>
@@ -1400,43 +1391,38 @@ function DashboardLiberadoPgto({ data, dbState }) {
         <div className="space-y-4">
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
                 <div className="px-4 py-3 border-b border-slate-300 flex flex-col gap-1">
-                    <h3 className="text-xs font-bold text-slate-600 uppercase tracking-widest">Liberados p/ Pagamento</h3>
-                    <span className="text-xs text-slate-600">{liberados.length} cargas</span>
+                    <h3 className="text-lg font-bold text-slate-600 uppercase tracking-widest">Liberados p/ Pagamento</h3>
+                    <span className="text-lg text-slate-600">{liberados.length} cargas</span>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="w-full text-xs">
                         <thead>
                             <tr className="border-b border-slate-300 bg-slate-100">
-                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">SLA</th>
-                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">#</th>
-                                <th className="text-left py-2 px-3 text-slate-700 font-semibold">CARGA</th>
-                                <th className="text-left py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
-                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">DOCA</th>
-                                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO LIB. PGTO</th>
-                                <th className="text-right py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
+                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO LIB. PGTO</th>
+                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">CARGA</th>
+                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">FORNECEDOR</th>
+                                 <th className="text-center py-2 px-3 text-slate-700 font-semibold">MOTORISTA</th>
+                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">DOCA</th>                               
+                                <th className="text-center py-2 px-3 text-slate-700 font-semibold">TEMPO TOTAL</th>
                             </tr>
                         </thead>
                         <tbody>
                             {liberados.map((row, i) => (
                                 <tr key={i} className="border-b border-slate-200 table-row-hover">
-                                    <td className="py-2 px-3 text-center align-middle">
-                                        <span className="inline-block w-3 h-3 rounded-full" style={{ backgroundColor: getSLAColor(row.minutosLiberado) }} />
-                                    </td>
-                                    <td className="py-2 px-3 text-center font-mono font-bold text-slate-500 align-middle">{i + 1}º</td>
-                                    <td className="py-2 px-3 font-mono text-blue-700 font-semibold align-middle">{row.carga}</td>
-                                    <td className="py-2 px-3 text-slate-700 align-middle">
-                                        <div className="whitespace-normal break-words">{row.fornecedor}</div>
-                                        <div className="text-slate-500 whitespace-normal break-words">{row.motorista}</div>
-                                    </td>
-                                    <td className="py-2 px-3 text-center font-mono font-bold text-yellow-700 align-middle">{row.doca}</td>
-                                    <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${row.minutosLiberado === null ? 'text-slate-500' :
+                                  
+                                    <td className={`py-2 px-3 text-center font-mono font-bold text-base align-middle ${row.minutosLiberado === null ? 'text-slate-500' :
                                         row.minutosLiberado >= 60 ? 'text-red-700' :
                                             row.minutosLiberado >= 30 ? 'text-yellow-700' :
                                                 'text-green-700'
                                         }`}>
                                         {formatDuration(row.minutosLiberado)}
                                     </td>
-                                    <td className={`py-2 px-3 text-right font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
+                                    <td className={`py-2 px-3 text-center text-base font-mono text-blue-700 font-semibold align-middle ${getAguardandoSLAColor(row.minutosLiberado)}`}>{row.carga} </td>
+                                    <td className="py-2 px-3 text-center text-base text-slate-700 font-semibold align-middle">{row.fornecedor}</td>                                     
+                                    <td className="text-center text-base text-slate-500 whitespace-normal break-words">{row.motorista?.trim().split(/\s+/).slice(0, 2).join(' ')}</td>                                    
+                                    <td className="py-2 px-3 text-center text-base font-mono font-bold text-yellow-700 align-middle">{row.doca}</td>
+                                   
+                                    <td className={`py-2 px-3 text-center text-base font-mono font-bold text-base align-middle ${getAguardandoSLAColor(row.minutosTotal)}`}>
                                         {formatDuration(row.minutosTotal)}
                                     </td>
                                 </tr>
@@ -1725,11 +1711,33 @@ function App() {
             // Restaura colunas após captura
             colsAcao.forEach(el => el.style.display = '');
 
-            const url = canvas.toDataURL('image/png');
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `logistica_${tabLabel.replace(/[^a-zA-Z0-9]/g, '_')}_${agora}.png`;
-            a.click();
+            canvas.toBlob(async (blob) => {
+                await navigator.clipboard.write([
+                    new ClipboardItem({
+                        'image/png': blob
+                    })
+                ]);
+             const msg = document.createElement('div');
+msg.textContent = '✓ Imagem copiada para a área de transferência';
+msg.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #16a34a;
+    color: white;
+    padding: 12px 18px;
+    border-radius: 8px;
+    font-weight: 600;
+    z-index: 9999;
+    box-shadow: 0 4px 12px rgba(0,0,0,.2);
+`;
+
+document.body.appendChild(msg);
+
+setTimeout(() => {
+    msg.remove();
+}, 3000);
+            });
         } catch (err) {
             // Garante restauração mesmo se der erro
             document.querySelectorAll('.col-acao').forEach(el => el.style.display = '');
