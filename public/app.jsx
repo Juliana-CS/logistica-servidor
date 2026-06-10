@@ -1203,6 +1203,16 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
             alert('Digite o número da Doca antes de confirmar!');
             return;
         }
+              const numeroDoca = Number(doca);
+        if (
+            !Number.isInteger(numeroDoca) ||
+            numeroDoca < 1 ||
+            numeroDoca > 50 ||
+            doca !== String(numeroDoca)
+        ) {
+        alert('A Doca deve ser um número inteiro entre 1 e 50.');
+        return;
+        }
         salvarAcionamento(row.carga, doca, row.fornecedor, row.motorista);
         setDocaInputs(prev => ({ ...prev, [row.carga]: '' }));
     }
