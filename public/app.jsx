@@ -42,7 +42,7 @@ function getTurno(date) {
 function getDayKey(date) {
     if (!date) return null;
     const d = new Date(date);
-    if (d.getHours() >= 22) d.setDate(d.getDate() + 1);  // empurra para o próximo dia
+    if (d.getHours() >= 22+11) d.setDate(d.getDate() + 1);  // empurra para o próximo dia
     return `${d.getDate().toString().padStart(2, '0')}/${(d.getMonth() + 1).toString().padStart(2, '0')}`;
 }
 
@@ -185,7 +185,7 @@ function processConf(csvText) {
             const baseDate = new Date(ano, mes, dia);
 
             // Apenas horários entre 22:00 e 23:59 pertencem ao ciclo do dia SEGUINTE
-            if (fimConfMin >= 22 * 60) baseDate.setDate(baseDate.getDate() + 1);
+            if (fimConfMin >= 22 * 60 +15) baseDate.setDate(baseDate.getDate() + 1);
 
             fimConfDia = `${baseDate.getDate().toString().padStart(2, '0')}/${(baseDate.getMonth() + 1).toString().padStart(2, '0')}`;
         }
@@ -599,7 +599,7 @@ function Top3Fornecedores({ filtered }) {
 // Turno pelo total de minutos (0-1439), sem precisar de Date object
 function getTurnoByMin(totalMin) {
     if (totalMin === null || totalMin === undefined) return null;
-    if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60) return '2º Turno';
+    if (totalMin >= 14 * 60 + 21 && totalMin <= 22 * 60+10) return '2º Turno';
     return '3º Turno';
 }
 
@@ -913,14 +913,14 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
                 { label: '19:00', ini: 19 * 60, fim: 20 * 60 },
                 { label: '20:00', ini: 20 * 60, fim: 21 * 60 },
                 { label: '21:00', ini: 21 * 60, fim: 22 * 60 },
-                { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 10 },
+                { label: '22:00', ini: 22 * 60, fim: 22 * 60 + 15 },
             ],
-            turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 + 10,
+            turnoIni: 14 * 60 + 26, turnoFim: 22 * 60 + 15,
         },
         {
             nome: '3º Turno', cor: 'border-blue-400', corHeader: 'bg-blue-700/30 text-blue-700',
             slots: [
-                { label: '22:00', ini: 22 * 60 + 11, fim: 23 * 60 },
+                { label: '22:00', ini: 22 * 60 + 16, fim: 23 * 60 },
                 { label: '23:00', ini: 23 * 60, fim: 24 * 60 },
                 { label: '00:00', ini: 0, fim: 1 * 60 },
                 { label: '01:00', ini: 1 * 60, fim: 2 * 60 },
