@@ -931,7 +931,7 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
                 { label: '05:59', ini: 5 * 60 + 59, fim: 5 * 60 + 60 },
             ],
             // 3º turno cruza meia-noite: pertence se >= 22:01 OU <= 05:59
-            turnoIni: null, turnoFim: null,
+            turnoIni: null, turnoFim: null, 
         },
     ];
 
@@ -1040,8 +1040,12 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
 }
 
 // ─── DASHBOARD: CARGAS EM DOCA ────────────────────────────────
-function DashboardDoca({ data, dbState, efMap, desfazerDoca }) {
+function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
     const now = new Date();
+    const [busca, setBusca] = useState('');
+    const [resultado, setResultado] = useState(null);
+    const [novaDoca, setNovaDoca] = useState('');
+    const [buscado, setBuscado] = useState(false);
     const conferencia = useMemo(() => {
         const vistos = new Set();
 
@@ -1083,8 +1087,102 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca }) {
             .sort((a, b) => (b.minutosDoca || 0) - (a.minutosDoca || 0));
     }, [data, dbState]);
 
+            function handleBuscar() {
+        const cargaInt = parseInt(busca.trim());
+        if (!cargaInt) return;
+        setBuscado(true);
+        const row = conferencia.find(r => r.carga === cargaInt);
+        if (!row) {
+            setResultado(null);
+            return;
+        }
+        setResultado(row);
+        setNovaDoca(row.doca !== '--' ? row.doca : '');
+        }
+
+        function handleConfirmarDoca() {
+        if (!novaDoca.trim()) {
+            alert('Digite o número da doca.');
+            return;
+        }
+        const msg = resultado.doca !== '--'
+            ? `A carga ${resultado.carga} está na doca ${resultado.doca}. Deseja alterar para a doca ${novaDoca}?`
+            : `Confirma a doca ${novaDoca} para a carga ${resultado.carga}?`;
+        if (!window.confirm(msg)) return;
+        atualizarDoca(resultado.carga, novaDoca);
+        setResultado(prev => ({ ...prev, doca: novaDoca }));
+        }
+
     return (
-        <div className="space-y-4">
+  <div className="space-y-4">
+
+    {/* Buscar e editar doca */}
+    <div className="bg-white border border-slate-300 rounded-xl p-4 shadow-sm">
+      <h3 className="text-sm font-bold text-slate-600 uppercase tracking-widest mb-3">Editar Doca</h3>
+      <div className="flex items-center gap-3">
+        <input
+          type="number"
+          placeholder="Digite o número da carga..."
+          value={busca}
+          onChange={e => { setBusca(e.target.value); setBuscado(false); setResultado(null); }}
+          onKeyDown={e => e.key === 'Enter' && handleBuscar()}
+          className="doca-input w-64 text-sm"
+        />
+        <button
+          onClick={handleBuscar}
+          className="bg-blue-700 hover:bg-blue-800 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
+        >🔍 Buscar</button>
+      </div>
+
+      {buscado && !resultado && (
+        <div className="mt-4 text-sm text-slate-500">
+          Nenhuma carga em conferência encontrada com o número <span className="font-mono font-bold">{busca}</span>.
+        </div>
+      )}
+
+      {resultado && (
+        <div className="mt-4 border border-slate-200 rounded-xl p-4 space-y-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 text-xs">
+            <div>
+              <p className="text-slate-400 uppercase tracking-widest mb-1">Carga</p>
+              <p className="font-mono font-bold text-blue-700 text-sm">{resultado.carga}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 uppercase tracking-widest mb-1">Fornecedor</p>
+              <p className="font-semibold text-slate-700">{resultado.fornecedor}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 uppercase tracking-widest mb-1">Motorista</p>
+              <p className="text-slate-600">{resultado.motorista}</p>
+            </div>
+            <div>
+              <p className="text-slate-400 uppercase tracking-widest mb-1">Doca Atual</p>
+              <p className={`font-mono font-bold text-sm ${resultado.doca !== '--' ? 'text-yellow-700' : 'text-slate-400'}`}>
+                {resultado.doca}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-3 pt-2 border-t border-slate-100">
+            <label className="text-xs font-semibold text-slate-600 uppercase tracking-widest whitespace-nowrap">
+              {resultado.doca !== '--' ? 'Nova Doca:' : 'Doca:'}
+            </label>
+            <input
+              className="doca-input"
+              placeholder="Nº da doca"
+              value={novaDoca}
+              onChange={e => setNovaDoca(e.target.value)}
+            />
+            <button
+              onClick={handleConfirmarDoca}
+              className="bg-green-700 hover:bg-green-600 text-white px-4 py-1.5 rounded-lg text-xs font-semibold transition-all"
+            >✓ Confirmar</button>
+          </div>
+        </div>
+      )}
+    </div>
+
+    {/* Cards de SLA + tabela */}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 {[
                     { label: '≥ 4h (CRÍTICO)', min: 240, color: 'red' },
@@ -1628,6 +1726,33 @@ function App() {
             setError('Erro ao comunicar com o servidor.');
         }
     }
+
+        async function atualizarDoca(carga, doca) {
+
+    const numeroDoca = Number(doca);
+
+    if (
+        !Number.isInteger(numeroDoca) ||
+        numeroDoca < 1 ||
+        numeroDoca > 50 ||
+        doca !== String(numeroDoca)
+    ) {
+        alert('A Doca deve ser um número inteiro entre 1 e 50.');
+        return;
+    }
+    try {
+        await fetch('/api/atualizar-doca', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ carga, doca }),
+        });
+        await carregarDB();
+    } catch {
+        setError('Erro ao comunicar com o servidor.');
+    }
+    }
+
+
     // ─── EXPORTAÇÃO EXCEL ───────────────────────────────────────
     const [showExportModal, setShowExportModal] = useState(false);
     const [exportDate, setExportDate] = useState('');
@@ -1822,7 +1947,7 @@ setTimeout(() => {
                         <div className="pb-8" id="painel-ativo">
                             {activeTab === 'geral' && <DashboardGeral data={continuumData} />}
                             {activeTab === 'eficiencia' && <DashboardEficiencia data={continuumData} efMap={efMap} />}
-                            {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} desfazerDoca={desfazerDoca} />}
+                            {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} desfazerDoca={desfazerDoca} atualizarDoca={atualizarDoca}/>}
                             {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} desfazerAcao={desfazerAcao} />}
                             {activeTab === 'liberado' && <DashboardLiberadoPgto data={continuumData} dbState={dbState} />}
                         </div>

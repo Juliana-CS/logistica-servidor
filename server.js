@@ -2,6 +2,9 @@
 // SERVIDOR LOGÍSTICA DE RECEBIMENTO
 // Node.js + Express + MongoDB Atlas
 // ============================================================
+require('node:dns/promises').setServers(["1.1.1.1", "8.8.8.8"]); // Se usar CommonJS (require)
+// OU se o seu projeto usar "import":
+// import dns from 'node:dns/promises'; dns.setServers(['1.1.1.1', '8.8.8.8']);
 
 const express = require('express');
 const path    = require('path');
@@ -103,6 +106,19 @@ app.post('/api/acionamento', async (req, res) => {
   await salvarDB(db_atual);
 
   res.json({ ok: true, carga, doca });
+});
+
+// POST /api/atualizar-doca — altera apenas o campo doca, sem mexer em acionamento_at
+app.post('/api/atualizar-doca', async(req, res) => {
+  const { carga, doca } = req.body;
+  if (!carga || !doca) return res.status(400).json({ erro: 'carga e doca são obrigatórios' });
+
+  const db = await lerDB();
+  if (!db[carga]) db[carga] = {};
+  db[carga].doca = doca;
+  await salvarDB(db);
+
+  res.json({ ok: true, carga, doca, dados: db[carga] });
 });
 
 // POST /api/remover — remove doca de uma carga
