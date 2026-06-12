@@ -1049,6 +1049,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
     const conferencia = useMemo(() => {
         const vistos = new Set();
 
+
         // 1. Acionados manualmente via painel (têm doca registrada no servidor)
         const manuais = Object.entries(dbState)
             .filter(([, db]) => db.acionamento && db.doca)
@@ -1057,7 +1058,8 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                 vistos.add(cargaInt);
                 const rowContinum = data.find(r => r.carga === cargaInt);
                 if (!rowContinum) return false;
-                if (rowContinum?.status === 'FINALIZADO') return false;
+                const statusValido = ['CONFERENCIA', 'AGENDADO'].includes(rowContinum?.status);
+                if (!statusValido) return false;
                 const ref = db.acionamento_at ? new Date(db.acionamento_at) : null;
                 const minutos = ref ? diffMinutes(ref, now) : null;
                 return {
@@ -1071,7 +1073,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                     minutosDoca: minutos,
                 };
             })
-            .filter(Boolean); // <- adicione isso       
+            .filter(Boolean);       
 
 
         // 2. Status CONFERENCIA no Continum (que ainda não foram acionados manualmente)
@@ -1082,6 +1084,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                 const minutos = ref ? diffMinutes(ref, now) : null;
                 return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos };
             });
+        
 
         return [...manuais, ...doContinum]
             .sort((a, b) => (b.minutosDoca || 0) - (a.minutosDoca || 0));
