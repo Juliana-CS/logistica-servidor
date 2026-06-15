@@ -108,6 +108,28 @@ app.post('/api/acionamento', async (req, res) => {
   res.json({ ok: true, carga, doca });
 });
 
+// POST /api/desfazer — desfaz contato ou liberação (apenas dentro de 5 minutos)
+app.post('/api/desfazer', async (req, res) => {
+  const { carga, acao } = req.body;
+  if (!carga || !acao) return res.status(400).json({ erro: 'carga e acao são obrigatórios' });
+
+  const db_atual = await lerDB();
+  if (!db_atual[carga]) return res.status(404).json({ erro: 'carga não encontrada' });
+
+  const atKey = `${acao}_at`;
+  const registradoEm = db_atual[carga][atKey];
+  if (!registradoEm) return res.status(400).json({ erro: 'ação não registrada' });
+
+  const diff = (new Date() - new Date(registradoEm)) / 60000;
+  if (diff > 60) return res.status(403).json({ erro: 'Prazo de 60 minutos expirado' });
+
+  delete db_atual[carga][acao];
+  delete db_atual[carga][atKey];
+  await salvarDB(db_atual);
+
+  res.json({ ok: true, carga, acao });
+});
+
 // POST /api/atualizar-doca — altera apenas o campo doca, sem mexer em acionamento_at
 app.post('/api/atualizar-doca', async(req, res) => {
   const { carga, doca } = req.body;

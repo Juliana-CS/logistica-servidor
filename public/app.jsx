@@ -782,19 +782,19 @@ function DashboardEficiencia({ data, efMap }) {
                     return (
                         <div key={turno} className="bg-white border border-slate-300 rounded-xl px-4 py-3">
                             <div className="flex items-center justify-between mb-2">
-                                <span className="text-xs font-bold text-slate-600 uppercase tracking-widest">{turno}</span>
+                                <span className="text-sm font-bold text-slate-600 uppercase tracking-widest">{turno}</span>
                                 <Badge color={parseFloat(pct) >= 80 ? 'green' : parseFloat(pct) >= 50 ? 'yellow' : 'red'}>
                                     {Math.min(parseFloat(pct), 100).toFixed(1)}%
                                 </Badge>
                             </div>
                             <div className="flex items-center gap-4">
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs text-slate-600">Prog</span>
+                                    <span className="text-sm text-slate-600">Prog</span>
                                     <span className="text-2xl font-mono font-bold text-slate-900">{prog}</span>
                                 </div>
                                 <span className="text-slate-400">|</span>
                                 <div className="flex items-center gap-2">
-                                    <span className="text-xs text-slate-600">Fin</span>
+                                    <span className="text-sm text-slate-600">Fin</span>
                                     <span className="text-xl font-mono font-bold text-green-700">{fin}</span>
                                 </div>
                                 <div className="flex-1 bg-slate-100 rounded-full h-1.5 ml-2">
@@ -850,7 +850,7 @@ function GraficoFinalizadosTurno({ stats }) {
 
                     return (
                         <div key={t.key} className="flex flex-col items-center gap-1 w-20">
-                            <span className="text-sm font-mono font-bold" style={{ color: t.cor }}>{val}</span>
+                            <span className="text-lg font-mono font-bold" style={{ color: t.cor }}>{val}</span>
                             <div className="w-full flex items-end" style={{ height: 290 }}>
                                 <div
                                     className="w-full rounded-t-lg transition-all duration-500 flex items-end justify-center pb-1"
@@ -866,16 +866,12 @@ function GraficoFinalizadosTurno({ stats }) {
             </div>
 
             {/* Linha de referência e legenda */}
-            <div className="mt-4 pt-3 border-t border-slate-200 flex justify-center gap-6">
+            <div className="text-lg mt-4 pt-3 border-t border-slate-200 flex justify-center gap-6">
                 {turnos.map((t, i) => (
                     <div key={t.key} className="flex items-center gap-2 text-base text-slate-600">
                         <span className="w-3 h-3 rounded-sm inline-block" style={{ backgroundColor: t.cor }}></span>
-                        {t.nome}: <span className="font-mono font-bold text-slate-800">{valores[i]}</span>
-                        <span className="text-slate-600">
-                            ({stats[t.key]?.prog > 0
-                                ? ((valores[i] / stats[t.key].prog) * 100).toFixed(0)
-                                : 0}% de {stats[t.key]?.prog || 0} prog.)
-                        </span>
+                        {t.nome}: <h1 className="text-xl font-mono font-bold text-slate-800">{valores[i]}</h1>
+                       
                     </div>
                 ))}
             </div>
@@ -1274,10 +1270,12 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
 }
 
 // ─── DASHBOARD: AGUARDANDO ACIONAMENTO ───────────────────────
-function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcionamento, desfazerAcao }) {
+function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcionamento, desfazerAcao, handlePaletes}) {
     const now = new Date();
     const [docaInputs, setDocaInputs] = useState({});
     const [filtroEtiqueta, setFiltroEtiqueta] = useState('__all__');
+    const [expirado, setExpirado] = useState(false);                 
+    const ultimoCarregamento = useRef(Date.now());
 
     const aguardando = useMemo(() =>
         data.filter(r => ['AGENDADO', 'FALTA COMPARECER'].includes(r.status) && r.chegada && !dbState[r.carga]?.acionamento)
@@ -1293,6 +1291,19 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 return true;
             }),
         [data, palMap, dbState, filtroEtiqueta]);
+
+         // 👈 adicione esse useEffect
+    useEffect(() => {
+        ultimoCarregamento.current = Date.now();
+        setExpirado(false);
+
+        const intervalo = setInterval(() => {
+            const minutos = (Date.now() - ultimoCarregamento.current) / 60000;
+            if (minutos >= 30) setExpirado(true);
+        }, 60000);
+
+        return () => clearInterval(intervalo);
+    }, [data]); // reseta o timer sempre que data mudar (novo carregamento)
 
     function handleAction(carga, action) {
         salvarAcao(carga, action);
@@ -1320,6 +1331,25 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
 
     return (
         <div className="space-y-4">
+
+          {expirado && (
+    <div className="flex items-center justify-between bg-amber-50 border border-amber-400 rounded-xl px-5 py-3 shadow-sm">
+        <div className="flex items-center gap-3">
+            <span className="text-2xl">⚠️</span>
+            <div>
+                <p className="font-bold text-amber-700">Dados desatualizados</p>
+                <p className="text-sm text-amber-600">Faz mais de 30 minutos desde o último carregamento. Importe a base novamente.</p>
+            </div>
+        </div>
+        <label className="ml-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold text-sm transition-all whitespace-nowrap cursor-pointer">
+            📂 Carregar base
+            <input type="file" className="hidden" onChange={handlePaletes} />
+        </label>
+    </div>
+)}
+
+            {/* resto do JSX normal... */}
+            <div className="flex items-center gap-3"></div>
             <div className="flex items-center gap-3">
                 <span className="text-xs text-slate-600 uppercase tracking-widest font-semibold">Etiqueta:</span>
                 <div className="flex gap-2">
@@ -1408,7 +1438,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                                                             {new Date(db.contato_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                                         </span>
                                                     )}
-                                                    {db.contato_at && (new Date() - new Date(db.contato_at)) / 60000 <= 5 && (
+                                                    {db.contato_at && (new Date() - new Date(db.contato_at)) / 60000 <= 60 && (
                                                         <button
                                                             onClick={() => desfazerAcao(row.carga, 'contato')}
                                                             className="text-xs text-red-400 hover:text-red-600 transition-all"
@@ -1430,7 +1460,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                                                             {new Date(db.liberacao_at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                                                         </span>
                                                     )}
-                                                    {db.liberacao_at && (new Date() - new Date(db.liberacao_at)) / 60000 <= 5 && (
+                                                    {db.liberacao_at && (new Date() - new Date(db.liberacao_at)) / 60000 <= 60 && (
                                                         <button
                                                             onClick={() => desfazerAcao(row.carga, 'liberacao')}
                                                             className="text-xs text-red-400 hover:text-red-600 transition-all"
@@ -1951,7 +1981,7 @@ setTimeout(() => {
                             {activeTab === 'geral' && <DashboardGeral data={continuumData} />}
                             {activeTab === 'eficiencia' && <DashboardEficiencia data={continuumData} efMap={efMap} />}
                             {activeTab === 'doca' && <DashboardDoca data={continuumData} dbState={dbState} efMap={efMap} desfazerDoca={desfazerDoca} atualizarDoca={atualizarDoca}/>}
-                            {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} desfazerAcao={desfazerAcao} />}
+                            {activeTab === 'aguardando' && <DashboardAguardando data={continuumData} palMap={palMap} dbState={dbState} salvarAcao={salvarAcao} salvarAcionamento={salvarAcionamento} desfazerAcao={desfazerAcao} handlePaletes={handlePaletes} />}
                             {activeTab === 'liberado' && <DashboardLiberadoPgto data={continuumData} dbState={dbState} />}
                         </div>
                     </>
