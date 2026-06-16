@@ -1,21 +1,22 @@
-// ============================================================
-// LOGÍSTICA DE RECEBIMENTO - APP PRINCIPAL
-// Desenvolvido para uso simultâneo via JSON compartilhado
-// ============================================================
+    // ============================================================
+    // LOGÍSTICA DE RECEBIMENTO - APP PRINCIPAL
+    // Desenvolvido para uso simultâneo via JSON compartilhado
+    // ============================================================
 
-const { useState, useEffect, useCallback, useMemo, useRef } = React;
+    
+    const { useState, useEffect, useCallback, useMemo, useRef } = React;
 
-// ─── UTILITÁRIOS DE TEMPO ────────────────────────────────────
-function parseDateBR(dateStr, hourStr) {
-    if (!dateStr || !hourStr) return null;
-    try {
-        // Formato DD/MM/YY HH:mm
-        const [d, m, y] = dateStr.trim().split('/');
-        const year = y.length === 2 ? '20' + y : y;
-        const dt = new Date(`${year}-${m}-${d}T${hourStr.trim()}:00`);
-        return isNaN(dt.getTime()) ? null : dt;
-    } catch { return null; }
-}
+    // ─── UTILITÁRIOS DE TEMPO ────────────────────────────────────
+    function parseDateBR(dateStr, hourStr) {
+        if (!dateStr || !hourStr) return null;
+        try {
+            // Formato DD/MM/YY HH:mm
+            const [d, m, y] = dateStr.trim().split('/');
+            const year = y.length === 2 ? '20' + y : y;
+            const dt = new Date(`${year}-${m}-${d}T${hourStr.trim()}:00`);
+            return isNaN(dt.getTime()) ? null : dt;
+        } catch { return null; }
+    }
 
 function parseDatetime(dtStr) {
     if (!dtStr || dtStr === 'NaN' || dtStr === '') return null;
@@ -1338,7 +1339,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
             <span className="text-2xl">⚠️</span>
             <div>
                 <p className="font-bold text-amber-700">Dados desatualizados</p>
-                <p className="text-sm text-amber-600">Faz mais de 30 minutos desde o último carregamento. Importe a base novamente.</p>
+                <p className="text-sm text-amber-600">Faz mais de 30 minutos desde o último carregamento. e a base novamente.</p>
             </div>
         </div>
         <label className="ml-4 px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg font-semibold text-sm transition-all whitespace-nowrap cursor-pointer">
