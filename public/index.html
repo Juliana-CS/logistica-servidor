@@ -1,15 +1,19 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Acompanhamento Logístico de Recebimento</title>
-  <script src="https://cdn.tailwindcss.com" data-csp-nonce=""></script>
+   <script>
+    // Impede o Tailwind de usar módulos ES
+    window.tailwind = { config: {} };
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"
-    rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
   <style>
     * {
       font-family: 'IBM Plex Sans', sans-serif;
@@ -90,18 +94,17 @@
     }
   </style>
 </head>
-
 <body style="background:#f8fafc; margin:0;">
   <div id="root"></div>
-  <script src="https://cdn.tailwindcss.com" data-csp-nonce=""></script>
-  <script src="https://unpkg.com/react@18/umd/react.development.js" data-plugins=""></script>
-  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" data-plugins=""></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js" data-plugins=""></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js" data-plugins=""></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" data-plugins=""></script>
-  <script type="text/babel">  
-  // ============================================================
+  <script src="https://unpkg.com/@babel/standalone@7.23.10/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+  <script src="https://unpkg.com/papaparse@5.4.1/papaparse.min.js"></script>
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script type="text/babel" data-presets="react">
+       // ============================================================
     // LOGÍSTICA DE RECEBIMENTO - APP PRINCIPAL
     // Desenvolvido para uso simultâneo via JSON compartilhado
     // ============================================================
@@ -2142,7 +2145,7 @@ setTimeout(() => {
 
 // Mount
 const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(React.createElement(App));</script>
+root.render(React.createElement(App));
+  </script>
 </body>
-
 </html>
