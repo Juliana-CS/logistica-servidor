@@ -1142,7 +1142,6 @@ function EficienciaHoraTurno({ filtered, efMap, selectedDay }) {
     );
 }
 
-// ─── DASHBOARD: CARGAS EM DOCA ────────────────────────────────
 function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
     const now = new Date();
     const [busca, setBusca] = useState('');
@@ -1165,6 +1164,8 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                 if (!statusValido) return false;
                 const ref = db.acionamento_at ? new Date(db.acionamento_at) : null;
                 const minutos = ref ? diffMinutes(ref, now) : null;
+                const chegada = rowContinum?.chegada || null;
+                const minutosTotal = chegada ? diffMinutes(chegada, now) : null;
                 return {
                     carga: cargaInt,
                     fornecedor: db.fornecedor || rowContinum?.fornecedor || '--',
@@ -1174,6 +1175,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                     doca: db.doca,
                     acionado: ref,
                     minutosDoca: minutos,
+                    minutosTotal,
                 };
             })
             .filter(Boolean);       
@@ -1185,9 +1187,9 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
             .map(row => {
                 const ref = row.acionado || row.chegada;
                 const minutos = ref ? diffMinutes(ref, now) : null;
-                return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos };
-            });
-        
+                 const minutosTotal = row.chegada ? diffMinutes(row.chegada, now) : null;
+                return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos, minutosTotal};
+            });        
 
         return [...manuais, ...doContinum]
             .sort((a, b) => (b.minutosDoca || 0) - (a.minutosDoca || 0));
@@ -1304,8 +1306,10 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
             </div>
 
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-                <div className="px-4 py-3 text-center border-b border-slate-200 flex flex-col items-start gap-2">
-                    <h3 className="text-lg text-center font-bold text-slate-800 uppercase tracking-widest">Cargas em Doca - {conferencia.length}</h3>
+                <div className="px-6 py-5 text-center border-b border-slate-200">
+                    <h3 className="text-2xl font-bold text-slate-900 uppercase tracking-widest">
+                        Cargas em Doca - {conferencia.length}
+                    </h3>
                 </div>
 
 
@@ -1314,7 +1318,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                     <table className="w-full text-xs">
                         <thead>
                             <tr className="border-b border-slate-300 bg-slate-100">
-
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">TEMPO TOTAL</th>
                                 <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">TEMPO DOCA</th>
                                 <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">CARGA</th>
                                 <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">FORNECEDOR</th>
@@ -1328,7 +1332,9 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                         <tbody>
                             {conferencia.map((row, i) => (
                                 <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                                   
+                                    <td className={`py-2 px-3 text-center font-mono font-bold text-xl ${getAguardandoSLAColor(row.minutosTotal)}`}>
+                                        {formatDuration(row.minutosTotal)}
+                                        </td>
                                     <td className={`py-2 px-3 text-center font-mono font-bold text-xl ${getDocaSLAColor(row.minutosDoca)}`}>
                                         {formatDuration(row.minutosDoca)}
                                     </td>
@@ -1375,12 +1381,18 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
         </div>
     );
 }
-
 // ─── DASHBOARD: AGUARDANDO ACIONAMENTO ───────────────────────
 function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcionamento, desfazerAcao, handlePaletes}) {
     const now = new Date();
     const [docaInputs, setDocaInputs] = useState({});
     const [filtroEtiqueta, setFiltroEtiqueta] = useState('__all__');
+    const [filtros, setFiltros] = useState({
+    carga: '',
+    senha: '',
+    fornecedor: '',
+    motorista: '',
+    placa: ''
+});
     const [expirado, setExpirado] = useState(false);                 
     const ultimoCarregamento = useRef(Date.now());
 
@@ -1399,7 +1411,25 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
             }),
         [data, palMap, dbState, filtroEtiqueta]);
 
-         // 👈 adicione esse useEffect
+        const aguardandoFiltrado = useMemo(() => {
+    return aguardando.filter(row => {
+        const carga = String(row.carga || '').toLowerCase();
+        const senha = String(row.senha || '').toLowerCase();
+        const fornecedor = String(row.fornecedor || '').toLowerCase();
+        const motorista = String(row.motorista || '').toLowerCase();
+
+        const placa = `${row.placaCarreta || ''} ${row.placaCavalo || ''}`.toLowerCase();
+
+        return (
+            carga.includes(filtros.carga.toLowerCase()) &&
+            senha.includes(filtros.senha.toLowerCase()) &&
+            fornecedor.includes(filtros.fornecedor.toLowerCase()) &&
+            motorista.includes(filtros.motorista.toLowerCase()) &&
+            placa.includes(filtros.placa.toLowerCase())
+        );
+    });
+}, [aguardando, filtros]);
+
     useEffect(() => {
         ultimoCarregamento.current = Date.now();
         setExpirado(false);
@@ -1475,10 +1505,74 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                 </div>
             </div>
             <div className="bg-white border border-slate-300 rounded-xl overflow-hidden shadow-sm">
-                <div className="px-4 py-3 border-b border-slate-300">
-                    <h3 className="text-lg font-bold text-slate-600 uppercase tracking-widest">Aguardando Acionamento - {aguardando.length}</h3>                    
-                </div>
-                <div className="overflow-x-auto">
+              <div className="px-6 py-5 text-center border-b border-slate-200">
+    <h3 className="text-2xl font-bold text-slate-900 uppercase tracking-widest">
+        Aguardando Acionamento - {aguardandoFiltrado.length}
+    </h3>
+</div>
+
+
+{/* FILTROS DE PESQUISA */}
+<div className="grid grid-cols-5 gap-3 px-4 py-3 bg-slate-50 border-b border-slate-300">
+
+    <input
+        type="text"
+        placeholder="🔍 Carga"
+        value={filtros.carga}
+        onChange={e => setFiltros(prev => ({
+            ...prev,
+            carga: e.target.value
+        }))}
+        className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+    />
+
+    <input
+        type="text"
+        placeholder="🔍 Senha"
+        value={filtros.senha}
+        onChange={e => setFiltros(prev => ({
+            ...prev,
+            senha: e.target.value
+        }))}
+        className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+    />
+
+    <input
+        type="text"
+        placeholder="🔍 Fornecedor"
+        value={filtros.fornecedor}
+        onChange={e => setFiltros(prev => ({
+            ...prev,
+            fornecedor: e.target.value
+        }))}
+        className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+    />
+
+    <input
+        type="text"
+        placeholder="🔍 Motorista"
+        value={filtros.motorista}
+        onChange={e => setFiltros(prev => ({
+            ...prev,
+            motorista: e.target.value
+        }))}
+        className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+    />
+
+    <input
+        type="text"
+        placeholder="🔍 Placa"
+        value={filtros.placa}
+        onChange={e => setFiltros(prev => ({
+            ...prev,
+            placa: e.target.value
+        }))}
+        className="border border-slate-300 rounded-lg px-3 py-2 text-sm outline-none focus:border-blue-500"
+    />
+
+</div>
+
+<div className="overflow-x-auto">
                     <table className="w-full text-lg">
                         <thead>
                             <tr className="border-b border-slate-300 bg-slate-100">
@@ -1497,7 +1591,7 @@ function DashboardAguardando({ data, palMap, dbState, salvarAcao, salvarAcioname
                             </tr>
                         </thead>
                         <tbody>
-                            {aguardando.map((row, i) => {
+                            {aguardandoFiltrado.map((row, i) => {
                                 const db = dbState[row.carga] || {};
                                 return (
                                     <tr key={i} className={`border-b border-slate-200 table-row-hover `}>

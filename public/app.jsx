@@ -1059,6 +1059,8 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                 if (!statusValido) return false;
                 const ref = db.acionamento_at ? new Date(db.acionamento_at) : null;
                 const minutos = ref ? diffMinutes(ref, now) : null;
+                const chegada = rowContinum?.chegada || null;
+                const minutosTotal = chegada ? diffMinutes(chegada, now) : null;
                 return {
                     carga: cargaInt,
                     fornecedor: db.fornecedor || rowContinum?.fornecedor || '--',
@@ -1068,6 +1070,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                     doca: db.doca,
                     acionado: ref,
                     minutosDoca: minutos,
+                    minutosTotal,
                 };
             })
             .filter(Boolean);       
@@ -1079,9 +1082,9 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
             .map(row => {
                 const ref = row.acionado || row.chegada;
                 const minutos = ref ? diffMinutes(ref, now) : null;
-                return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos };
-            });
-        
+                 const minutosTotal = row.chegada ? diffMinutes(row.chegada, now) : null;
+                return { ...row, doca: dbState[row.carga]?.doca || '--', minutosDoca: minutos, minutosTotal};
+            });        
 
         return [...manuais, ...doContinum]
             .sort((a, b) => (b.minutosDoca || 0) - (a.minutosDoca || 0));
@@ -1208,7 +1211,7 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                     <table className="w-full text-xs">
                         <thead>
                             <tr className="border-b border-slate-300 bg-slate-100">
-
+                                <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">TEMPO TOTAL</th>
                                 <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">TEMPO DOCA</th>
                                 <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">CARGA</th>
                                 <th className="text-center py-2 px-3 text-base  text-slate-700 font-semibold">FORNECEDOR</th>
@@ -1222,7 +1225,9 @@ function DashboardDoca({ data, dbState, efMap, desfazerDoca, atualizarDoca }) {
                         <tbody>
                             {conferencia.map((row, i) => (
                                 <tr key={i} className={`border-b border-slate-200 table-row-hover `}>
-                                   
+                                    <td className={`py-2 px-3 text-center font-mono font-bold text-xl ${getAguardandoSLAColor(row.minutosTotal)}`}>
+                                        {formatDuration(row.minutosTotal)}
+                                        </td>
                                     <td className={`py-2 px-3 text-center font-mono font-bold text-xl ${getDocaSLAColor(row.minutosDoca)}`}>
                                         {formatDuration(row.minutosDoca)}
                                     </td>
